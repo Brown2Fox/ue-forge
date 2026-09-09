@@ -110,4 +110,4 @@ pyinstaller specs/ue_forge.spec
 
 ## Лицензия
 
-MIT
+[MIT](LICENSE)

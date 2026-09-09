@@ -110,4 +110,4 @@ Individual tool builds: `specs/plugin_builder.spec`, `specs/renamer.spec`, `spec
 
 ## License
 
-MIT
+[MIT](LICENSE)
