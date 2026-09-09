@@ -101,9 +101,10 @@ class SinglePageShell(FramelessWindow):
 
     def _setup_ui(self) -> None:
         central = QWidget()
+        central.setObjectName("windowFrame")
         self.setCentralWidget(central)
         root = QVBoxLayout(central)
-        root.setContentsMargins(0, 0, 0, 0)
+        root.setContentsMargins(1, 1, 1, 1)
         root.setSpacing(0)
 
         header = self._create_header()

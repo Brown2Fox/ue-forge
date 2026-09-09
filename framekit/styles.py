@@ -166,6 +166,10 @@ def get_main_stylesheet() -> str:
         QMainWindow {{
             background-color: {COLORS['bg_primary']};
         }}
+
+        QWidget#windowFrame {{
+            background-color: {COLORS['border_default']};
+        }}
         
         /* ===== SCROLL BARS ===== */
         QScrollBar:vertical {{
