@@ -272,6 +272,7 @@ def get_main_stylesheet() -> str:
             border-radius: {RADIUS['md']};
             padding: 4px;
             selection-background-color: {COLORS['bg_tertiary']};
+            selection-color: {COLORS['text_primary']};
             outline: none;
         }}
         QComboBox QAbstractItemView::item {{
@@ -280,6 +281,7 @@ def get_main_stylesheet() -> str:
         }}
         QComboBox QAbstractItemView::item:selected {{
             background-color: {COLORS['bg_tertiary']};
+            color: {COLORS['text_primary']};
         }}
         
         /* ===== BUTTONS ===== */
