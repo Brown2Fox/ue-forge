@@ -204,6 +204,8 @@ class BuildConfig:
     strict_includes: bool = False
     unversioned: bool = False
     extra_params: Dict[str, Any] = field(default_factory=dict)
+    deploy_after_build: bool = False
+    deploy_path: Optional[Path] = None
 
     def get_all_params(self) -> Dict[str, Any]:
         """Get all build parameters as a dictionary."""
@@ -233,5 +235,7 @@ class BuildResult:
     message: str
     duration_seconds: float = 0.0
     output_path: Optional[Path] = None
+    deployment_path: Optional[Path] = None
+    deployment_error: str = ""
     errors: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)

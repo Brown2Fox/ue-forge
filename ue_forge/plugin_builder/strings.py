@@ -66,6 +66,9 @@ register_translations({
         "to_parent_directory": "To parent directory",
         "select_another_directory": "Select another directory",
         "output_path": "Output path...",
+        "deploy_after_build": "Copy to Engine/Plugins after build",
+        "deploy_directory": "Deployment directory",
+        "deploy_path": "Engine/Plugins path...",
 
         # Buttons
         "advanced_options": "Advanced Options",
@@ -125,6 +128,7 @@ register_translations({
         "select_target_engine": "Please select a target engine.",
         "engine_not_found": "Selected engine not found.",
         "specify_output_dir": "Please specify output directory.",
+        "specify_deploy_dir": "Please specify the deployment directory.",
 
         # Build messages
         "searching_engines": "Searching for Unreal Engine installations...",
@@ -134,6 +138,8 @@ register_translations({
         "applied_options": "Applied options: {options}",
         "build_complete": "Build Complete",
         "build_successful": "Plugin built successfully!\n\nOutput: {path}",
+        "build_deployed": "Plugin built and copied successfully!\n\nOutput: {output}\nDeployed to: {deployment}",
+        "build_deploy_failed": "Plugin built successfully, but could not be copied.\n\nOutput: {output}\nCopy error: {error}",
         "build_failed": "Build Failed",
         "build_failed_msg": "Build failed:\n\n{error}",
         "build_in_progress": "Build in Progress",
@@ -211,6 +217,9 @@ register_translations({
         "to_parent_directory": "В родительскую папку",
         "select_another_directory": "Указать другую папку",
         "output_path": "Путь назначения...",
+        "deploy_after_build": "После сборки копировать в Engine/Plugins",
+        "deploy_directory": "Папка установки",
+        "deploy_path": "Путь к Engine/Plugins...",
 
         # Buttons
         "advanced_options": "Дополнительно...",
@@ -270,6 +279,7 @@ register_translations({
         "select_target_engine": "Выберите целевой движок.",
         "engine_not_found": "Движок не найден.",
         "specify_output_dir": "Укажите папку назначения.",
+        "specify_deploy_dir": "Укажите папку установки плагина.",
 
         # Build messages
         "searching_engines": "Поиск установок Unreal Engine...",
@@ -279,6 +289,8 @@ register_translations({
         "applied_options": "Применены параметры: {options}",
         "build_complete": "Сборка завершена",
         "build_successful": "Плагин собран успешно!\n\nРезультат: {path}",
+        "build_deployed": "Плагин собран и скопирован!\n\nРезультат: {output}\nУстановлен в: {deployment}",
+        "build_deploy_failed": "Плагин собран, но скопировать его не удалось.\n\nРезультат: {output}\nОшибка копирования: {error}",
         "build_failed": "Ошибка сборки",
         "build_failed_msg": "Сборка не удалась:\n\n{error}",
         "build_in_progress": "Идёт сборка",

@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QComboBox,
+    QCheckBox,
     QPushButton,
     QRadioButton,
     QButtonGroup,
@@ -130,6 +131,9 @@ class PluginPanel(DropZoneWidget):
     def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent, valid_extensions=[".uplugin"], allow_directories=True)
         self._plugin_info: Optional[PluginInfo] = None
+        self._engines: Dict[str, EngineInfo] = {}
+        self._deploy_path_custom = False
+        self._updating_deploy_path = False
         self._setup_ui()
         overlay = self.setup_drop_overlay()
         overlay.configure(
@@ -261,7 +265,7 @@ class PluginPanel(DropZoneWidget):
         self._engine_combo.view().setStyleSheet(get_combo_popup_stylesheet())
         self._engine_combo.setMinimumWidth(160)
         self._engine_combo.setPlaceholderText(tr("select_version"))
-        self._engine_combo.currentIndexChanged.connect(self._check_version_match)
+        self._engine_combo.currentIndexChanged.connect(self._on_engine_changed)
         selector_row.addWidget(self._engine_combo, 1)
 
         engine_layout.addLayout(selector_row)
@@ -312,6 +316,20 @@ class PluginPanel(DropZoneWidget):
         self._custom_output.setVisible(False)
         content_layout.addWidget(self._custom_output)
 
+        self._deploy_checkbox = QCheckBox(tr("deploy_after_build"))
+        self._deploy_checkbox.toggled.connect(self._on_deploy_toggled)
+        content_layout.addWidget(self._deploy_checkbox)
+
+        self._deploy_output = PathInput(
+            label=tr("deploy_directory"),
+            placeholder=tr("deploy_path"),
+            icon_name="FOLDER_OPEN",
+            directory_mode=True,
+        )
+        self._deploy_output.path_changed.connect(self._on_deploy_path_changed)
+        self._deploy_output.setVisible(False)
+        content_layout.addWidget(self._deploy_output)
+
         content_layout.addStretch()
 
         scroll.setWidget(content)
@@ -320,6 +338,31 @@ class PluginPanel(DropZoneWidget):
     def _on_radio_toggled(self, checked: bool) -> None:
         """Handle radio button toggle."""
         self._custom_output.setVisible(self._custom_radio.isChecked())
+
+    def _on_engine_changed(self, _index: int) -> None:
+        self._check_version_match()
+        self._update_default_deploy_path()
+
+    def _on_deploy_toggled(self, checked: bool) -> None:
+        self._deploy_output.setVisible(checked)
+        if checked:
+            self._update_default_deploy_path()
+
+    def _on_deploy_path_changed(self, path: str) -> None:
+        if self._updating_deploy_path:
+            return
+        self._deploy_path_custom = bool(path.strip())
+        if not self._deploy_path_custom:
+            self._update_default_deploy_path()
+
+    def _update_default_deploy_path(self) -> None:
+        if self._deploy_path_custom:
+            return
+        engine = self._engines.get(self._engine_combo.currentData())
+        path = engine.path / "Engine" / "Plugins" if engine else None
+        self._updating_deploy_path = True
+        self._deploy_output.set_path(str(path) if path else "")
+        self._updating_deploy_path = False
 
     def _on_plugin_dropped(self, path: str) -> None:
         """Handle plugin dropped via drag & drop."""
@@ -383,6 +426,7 @@ class PluginPanel(DropZoneWidget):
 
     def set_engines(self, engines: Dict[str, EngineInfo]) -> None:
         """Set available engines."""
+        self._engines = engines
         current = self._engine_combo.currentData()
         self._engine_combo.clear()
 
@@ -395,6 +439,26 @@ class PluginPanel(DropZoneWidget):
                 self._engine_combo.setCurrentIndex(idx)
 
         self._check_version_match()
+        self._update_default_deploy_path()
+
+    def set_deployment(self, enabled: bool, path: str = "") -> None:
+        self._deploy_path_custom = bool(path.strip())
+        if self._deploy_path_custom:
+            self._updating_deploy_path = True
+            self._deploy_output.set_path(path)
+            self._updating_deploy_path = False
+        else:
+            self._update_default_deploy_path()
+        self._deploy_checkbox.setChecked(enabled)
+
+    def deploy_after_build(self) -> bool:
+        return self._deploy_checkbox.isChecked()
+
+    def get_deploy_path(self) -> str:
+        return self._deploy_output.path().strip()
+
+    def get_deploy_path_override(self) -> str:
+        return self.get_deploy_path() if self._deploy_path_custom else ""
 
     def get_plugin_path(self) -> str:
         return self._plugin_input.path()
@@ -639,6 +703,10 @@ class PluginBuilderPage(QWidget):
         """Load saved configuration."""
         config = self._config.load_config()
         self._build_options = config.build_options.copy() if config.build_options else {}
+        self._plugin_panel.set_deployment(
+            config.deploy_after_build,
+            config.deploy_path,
+        )
 
     def _save_config(self) -> None:
         """Save configuration."""
@@ -649,6 +717,8 @@ class PluginBuilderPage(QWidget):
             last_plugin_path=plugin_path,
             last_output_path=output_path or "",
             build_options=self._build_options,
+            deploy_after_build=self._plugin_panel.deploy_after_build(),
+            deploy_path=self._plugin_panel.get_deploy_path_override(),
         )
 
     # ------------------------------------------------------------------
@@ -733,6 +803,10 @@ class PluginBuilderPage(QWidget):
             MessageDialog.warning(self, tr("validation_error"), tr("specify_output_dir"))
             return False
 
+        if self._plugin_panel.deploy_after_build() and not self._plugin_panel.get_deploy_path():
+            MessageDialog.warning(self, tr("validation_error"), tr("specify_deploy_dir"))
+            return False
+
         return True
 
     def _get_build_config(self) -> Optional[BuildConfig]:
@@ -768,6 +842,10 @@ class PluginBuilderPage(QWidget):
             strict_includes=self._build_options.get("StrictIncludes", False),
             unversioned=self._build_options.get("Unversioned", False),
             extra_params=extra_params,
+            deploy_after_build=self._plugin_panel.deploy_after_build(),
+            deploy_path=Path(self._plugin_panel.get_deploy_path())
+            if self._plugin_panel.deploy_after_build()
+            else None,
         )
 
     def _start_build(self) -> None:
@@ -823,14 +901,36 @@ class PluginBuilderPage(QWidget):
         self._status_reset_timer.stop()
 
         if result.status == BuildStatus.SUCCESS:
-            self.status_changed.emit(StatusKind.SUCCESS, tr("success"))
             self._progress_bar.setValue(100)
-
-            MessageDialog.information(
-                self,
-                tr("build_complete"),
-                tr("build_successful", path=str(result.output_path))
-            )
+            if result.deployment_error:
+                self.status_changed.emit(StatusKind.WARNING, tr("build_complete"))
+                MessageDialog.warning(
+                    self,
+                    tr("build_complete"),
+                    tr(
+                        "build_deploy_failed",
+                        output=str(result.output_path),
+                        error=result.deployment_error,
+                    ),
+                )
+            elif result.deployment_path:
+                self.status_changed.emit(StatusKind.SUCCESS, tr("success"))
+                MessageDialog.information(
+                    self,
+                    tr("build_complete"),
+                    tr(
+                        "build_deployed",
+                        output=str(result.output_path),
+                        deployment=str(result.deployment_path),
+                    ),
+                )
+            else:
+                self.status_changed.emit(StatusKind.SUCCESS, tr("success"))
+                MessageDialog.information(
+                    self,
+                    tr("build_complete"),
+                    tr("build_successful", path=str(result.output_path)),
+                )
             self._status_reset_timer.start(10000)
         elif result.status == BuildStatus.CANCELLED:
             self.status_changed.emit(StatusKind.WARNING, tr("cancelled"))

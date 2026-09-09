@@ -13,6 +13,7 @@ Build Unreal Engine plugins from source using UAT (Unreal Automation Tool).
 - **Live build console** — real-time UAT output with color-coded log levels
 - **Advanced build flags** — strict includes, unity build, PCH, platform selection, custom UAT arguments
 - **Per-engine settings** — save preferred build configurations for each engine version
+- **Post-build deployment** — optionally copy a successful build to a configurable `Engine/Plugins` directory
 - **Drag & drop** — drop a plugin folder or `.uplugin` file directly onto the window
 
 ## Usage
@@ -27,9 +28,10 @@ python -m ue_forge   # → select "Builder" in sidebar
 
 1. Select or drop a `.uplugin` file
 2. Pick the target engine version from the dropdown
-3. (Optional) Configure advanced options — platforms, build flags
-4. Click **Build Plugin**
-5. Monitor progress in the live console
+3. (Optional) Enable copying to `Engine/Plugins` and adjust its path
+4. (Optional) Configure advanced options — platforms, build flags
+5. Click **Build Plugin**
+6. Monitor progress in the live console
 
 ## How it works
 

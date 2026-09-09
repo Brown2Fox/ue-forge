@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import threading
 import time
+import uuid
 from pathlib import Path
 from typing import Optional, Dict, Any, Callable, List
 
@@ -361,6 +362,21 @@ class PluginBuilder:
 
         if exit_code == 0:
             self._log("Build completed successfully", LogLevel.SUCCESS)
+            deployment_path = None
+            deployment_error = ""
+            if config.deploy_after_build:
+                try:
+                    deployment_path = self._deploy_plugin(config)
+                    self._log(
+                        f"Plugin copied to: {deployment_path}",
+                        LogLevel.SUCCESS,
+                    )
+                except (OSError, ValueError, shutil.Error) as e:
+                    deployment_error = str(e)
+                    self._log(
+                        f"Plugin copy failed: {deployment_error}",
+                        LogLevel.ERROR,
+                    )
             self._set_status(BuildStatus.SUCCESS)
             self._set_progress(100)
             return BuildResult(
@@ -369,6 +385,8 @@ class PluginBuilder:
                 message="Build completed successfully",
                 duration_seconds=duration,
                 output_path=config.output_path,
+                deployment_path=deployment_path,
+                deployment_error=deployment_error,
                 errors=errors,
                 warnings=warnings,
             )
@@ -383,6 +401,52 @@ class PluginBuilder:
                 errors=errors,
                 warnings=warnings,
             )
+
+    def _deploy_plugin(self, config: BuildConfig) -> Path:
+        if config.deploy_path is None:
+            raise ValueError("Deployment directory is not configured")
+
+        source = config.output_path.resolve()
+        source_plugin = config.plugin_path.resolve().parent
+        deployment_root = config.deploy_path.expanduser().resolve()
+        destination = deployment_root / config.plugin_path.stem
+
+        if not source.is_dir():
+            raise ValueError(f"Build output directory not found: {source}")
+        if (
+            destination == source
+            or destination.is_relative_to(source)
+            or source.is_relative_to(destination)
+        ):
+            raise ValueError("Deployment directory overlaps the build output directory")
+        if (
+            destination == source_plugin
+            or destination.is_relative_to(source_plugin)
+            or source_plugin.is_relative_to(destination)
+        ):
+            raise ValueError("Deployment destination overlaps the source plugin directory")
+
+        deployment_root.mkdir(parents=True, exist_ok=True)
+        token = uuid.uuid4().hex
+        staging = deployment_root / f".{config.plugin_path.stem}.{token}.tmp"
+        backup = deployment_root / f".{config.plugin_path.stem}.{token}.bak"
+
+        try:
+            shutil.copytree(source, staging)
+            if destination.exists():
+                destination.rename(backup)
+            staging.rename(destination)
+        except OSError:
+            if backup.exists() and not destination.exists():
+                backup.rename(destination)
+            raise
+        finally:
+            if staging.exists():
+                shutil.rmtree(staging, ignore_errors=True)
+
+        if backup.exists():
+            shutil.rmtree(backup, ignore_errors=True)
+        return destination
 
     def _run_build_async(self, config: BuildConfig) -> None:
         """Run build asynchronously in a thread."""

@@ -28,6 +28,8 @@ class UEForgeConfig(AppConfig):
     output_mode: str = "parent"
     default_platforms: list[str] = field(default_factory=lambda: ["Win64"])
     build_options: dict[str, Any] = field(default_factory=dict)
+    deploy_after_build: bool = False
+    deploy_path: str = ""
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "UEForgeConfig":
@@ -40,6 +42,8 @@ class UEForgeConfig(AppConfig):
             output_mode=data.get("output_mode", "parent"),
             default_platforms=data.get("default_platforms", ["Win64"]),
             build_options=data.get("build_options", {}),
+            deploy_after_build=data.get("deploy_after_build", False),
+            deploy_path=data.get("deploy_path", ""),
         )
 
 
