@@ -50,6 +50,7 @@ class PathInput(QWidget):
         self._directory_mode = directory_mode
         self._validator = validator
         self._icon_name = icon_name
+        self._browse_start_path = ""
         
         self._setup_ui(label, placeholder, hint)
     
@@ -143,21 +144,23 @@ class PathInput(QWidget):
     
     def _browse(self) -> None:
         """Open file/directory browser."""
+        start_path = self._input.text() or self._browse_start_path
         if self._directory_mode:
             path = QFileDialog.getExistingDirectory(
                 self,
                 "Select Directory",
-                self._input.text() or "",
+                start_path,
             )
         else:
             path, _ = QFileDialog.getOpenFileName(
                 self,
                 "Select File",
-                self._input.text() or "",
+                start_path,
                 self._file_filter or "All Files (*)",
             )
-        
+
         if path:
+            self._browse_start_path = path
             self._input.setText(path)
     
     def path(self) -> str:
@@ -171,6 +174,10 @@ class PathInput(QWidget):
     def set_placeholder(self, text: str) -> None:
         """Set placeholder text."""
         self._input.setPlaceholderText(text)
+
+    def set_browse_start_path(self, path: str) -> None:
+        """Set the path shown when the file dialog opens with an empty input."""
+        self._browse_start_path = path
     
     def is_valid(self) -> bool:
         """Check if the current path is valid."""

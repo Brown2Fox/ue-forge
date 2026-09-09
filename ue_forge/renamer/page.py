@@ -34,6 +34,7 @@ from pyside_frameless import DropZoneWidget
 from framekit.dialogs import MessageDialog
 from framekit.types import LogLevel, LogMessage, StatusKind
 from framekit.localization import tr
+from ue_forge.config import get_ue_config_manager as get_config_manager
 from ue_forge.plugin_builder.builder import PluginBuilder
 from .core import (
     ChangeType,
@@ -303,6 +304,7 @@ class _ConfigPanel(DropZoneWidget):
     """Left panel: drop zone, name inputs, scope options."""
 
     config_changed = Signal()
+    input_path_selected = Signal(str)
 
     def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent, valid_extensions=[".uplugin", ".uproject"], allow_directories=True)
@@ -531,6 +533,9 @@ class _ConfigPanel(DropZoneWidget):
             create_backup=self._backup_check.isChecked(),
         )
 
+    def set_browse_start_path(self, path: str) -> None:
+        self._file_input.set_browse_start_path(path)
+
     # Slots
 
     def _on_file_dropped(self, path: str) -> None:
@@ -546,6 +551,8 @@ class _ConfigPanel(DropZoneWidget):
             self._detected_name = p.stem
             self._is_project = p.suffix == ".uproject"
             self._current_name.setText(self._detected_name)
+            if p.is_file() and p.suffix.lower() in (".uplugin", ".uproject"):
+                self.input_path_selected.emit(str(p))
             # Try to get engine version for plugin info
             if p.suffix == ".uplugin":
                 info = PluginBuilder.extract_plugin_info(p)
@@ -598,6 +605,9 @@ class RenamerPage(QWidget):
 
         self._setup_ui()
         self._config.config_changed.connect(self._on_config_changed)
+        self._config.input_path_selected.connect(self._remember_input_path)
+        saved_config = get_config_manager().load_config()
+        self._config.set_browse_start_path(saved_config.last_renamer_path)
 
     @staticmethod
     def page_title() -> str:
@@ -764,6 +774,10 @@ class RenamerPage(QWidget):
                 self._preview_scroll.setVisible(False)
                 self._changes_badge.setVisible(False)
                 self._progress_bar.setVisible(False)
+
+    def _remember_input_path(self, path: str) -> None:
+        get_config_manager().update_config(last_renamer_path=path)
+        self._config.set_browse_start_path(path)
 
     # ------------------------------------------------------------------
     # Preview

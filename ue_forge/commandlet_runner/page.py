@@ -311,6 +311,7 @@ class _ConfigPanel(DropZoneWidget):
 
     config_changed = Signal()
     commandlet_selected = Signal(object)  # CommandletInfo or None
+    input_path_selected = Signal(str)
 
     def __init__(self, parent: Optional[QWidget] = None) -> None:
         super().__init__(
@@ -544,6 +545,9 @@ class _ConfigPanel(DropZoneWidget):
             tr("cmd_count", total=total, engine=eng, project=proj),
         )
 
+    def set_browse_start_path(self, path: str) -> None:
+        self._file_input.set_browse_start_path(path)
+
     def is_favorite(self, name: str) -> bool:
         return name in self._favorites
 
@@ -576,6 +580,7 @@ class _ConfigPanel(DropZoneWidget):
                         return
 
             if p.suffix == ".uproject" and p.exists():
+                self.input_path_selected.emit(str(p))
                 self._engine_path = resolve_engine_path(p)
                 if self._engine_path:
                     # Extract version
@@ -1402,11 +1407,16 @@ class CommandletRunnerPage(QWidget):
 
         self._setup_ui()
         self._config.config_changed.connect(self._on_config_changed)
+        self._config.input_path_selected.connect(self._remember_input_path)
         self._config.commandlet_selected.connect(self._on_commandlet_selected)
         self._detail.run_requested.connect(self._on_run_requested)
         self._detail.show_command_requested.connect(self._on_show_command)
         self._detail.cancel_requested.connect(self._on_cancel)
         self._detail.favorite_toggled.connect(self._on_favorite_toggled)
+        saved_config = get_config_manager().load_config()
+        self._config.set_browse_start_path(
+            saved_config.last_commandlet_project_path,
+        )
 
     @staticmethod
     def page_title() -> str:
@@ -1456,6 +1466,10 @@ class CommandletRunnerPage(QWidget):
             self._start_scan(Path(path), engine)
         elif not path:
             self._config.set_commandlets([], [])
+
+    def _remember_input_path(self, path: str) -> None:
+        get_config_manager().update_config(last_commandlet_project_path=path)
+        self._config.set_browse_start_path(path)
 
     def _start_scan(self, project: Path, engine: Path) -> None:
         self._scan_gen += 1

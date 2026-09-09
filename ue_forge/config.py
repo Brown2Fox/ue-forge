@@ -24,6 +24,9 @@ class UEForgeConfig(AppConfig):
     """Application configuration for UE Forge."""
 
     last_plugin_path: str = ""
+    last_renamer_path: str = ""
+    last_include_optimizer_path: str = ""
+    last_commandlet_project_path: str = ""
     last_output_path: str = ""
     output_mode: str = "parent"
     default_platforms: list[str] = field(default_factory=lambda: ["Win64"])
@@ -38,6 +41,9 @@ class UEForgeConfig(AppConfig):
             theme=data.get("theme", "dark"),
             window_geometry=data.get("window_geometry", {}),
             last_plugin_path=data.get("last_plugin_path", ""),
+            last_renamer_path=data.get("last_renamer_path", ""),
+            last_include_optimizer_path=data.get("last_include_optimizer_path", ""),
+            last_commandlet_project_path=data.get("last_commandlet_project_path", ""),
             last_output_path=data.get("last_output_path", ""),
             output_mode=data.get("output_mode", "parent"),
             default_platforms=data.get("default_platforms", ["Win64"]),

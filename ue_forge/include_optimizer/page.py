@@ -37,6 +37,7 @@ from framekit.dialogs import MessageDialog
 from framekit.types import LogLevel, LogMessage, StatusKind
 from framekit.localization import tr
 from pyside_frameless import DropZoneWidget
+from ue_forge.config import get_ue_config_manager as get_config_manager
 
 from .core import (
     ChangeType,
@@ -415,6 +416,7 @@ class _ConfigPanel(DropZoneWidget):
     """Left panel: drop zone + optimization scope options."""
 
     config_changed = Signal()
+    input_path_selected = Signal(str)
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(
@@ -663,6 +665,9 @@ class _ConfigPanel(DropZoneWidget):
             excluded_plugins=excluded,
         )
 
+    def set_browse_start_path(self, path: str) -> None:
+        self._file_input.set_browse_start_path(path)
+
     @property
     def discovered_plugins(self) -> list[PluginInfo]:
         return self._discovered_plugins
@@ -672,7 +677,14 @@ class _ConfigPanel(DropZoneWidget):
     def _on_file_dropped(self, file_path: str) -> None:
         self._file_input.set_path(file_path)
 
-    def _on_path_changed(self, _text: str) -> None:
+    def _on_path_changed(self, text: str) -> None:
+        path = Path(text) if text else None
+        if (
+            path is not None
+            and path.is_file()
+            and path.suffix.lower() in ('.uproject', '.uplugin')
+        ):
+            self.input_path_selected.emit(str(path))
         self._refresh_plugins()
         self._emit_changed()
 
@@ -781,6 +793,11 @@ class IncludeOptimizerPage(QWidget):
 
         self._setup_ui()
         self._config.config_changed.connect(self._on_config_changed)
+        self._config.input_path_selected.connect(self._remember_input_path)
+        saved_config = get_config_manager().load_config()
+        self._config.set_browse_start_path(
+            saved_config.last_include_optimizer_path,
+        )
 
     @staticmethod
     def page_title() -> str:
@@ -956,6 +973,10 @@ class IncludeOptimizerPage(QWidget):
                 self._preview_scroll.setVisible(False)
                 self._changes_badge.setVisible(False)
                 self._progress_bar.setVisible(False)
+
+    def _remember_input_path(self, path: str) -> None:
+        get_config_manager().update_config(last_include_optimizer_path=path)
+        self._config.set_browse_start_path(path)
 
     # ------------------------------------------------------------------
     # Preview

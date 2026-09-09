@@ -463,6 +463,9 @@ class PluginPanel(DropZoneWidget):
     def get_plugin_path(self) -> str:
         return self._plugin_input.path()
 
+    def set_plugin_browse_path(self, path: str) -> None:
+        self._plugin_input.set_browse_start_path(path)
+
     def get_selected_engine(self) -> Optional[str]:
         return self._engine_combo.currentData()
 
@@ -703,6 +706,7 @@ class PluginBuilderPage(QWidget):
         """Load saved configuration."""
         config = self._config.load_config()
         self._build_options = config.build_options.copy() if config.build_options else {}
+        self._plugin_panel.set_plugin_browse_path(config.last_plugin_path)
         self._plugin_panel.set_deployment(
             config.deploy_after_build,
             config.deploy_path,
@@ -710,11 +714,9 @@ class PluginBuilderPage(QWidget):
 
     def _save_config(self) -> None:
         """Save configuration."""
-        plugin_path = self._plugin_panel.get_plugin_path()
         output_path = self._plugin_panel.get_output_path()
 
         self._config.update_config(
-            last_plugin_path=plugin_path,
             last_output_path=output_path or "",
             build_options=self._build_options,
             deploy_after_build=self._plugin_panel.deploy_after_build(),
@@ -771,7 +773,14 @@ class PluginBuilderPage(QWidget):
         self._status_reset_timer.stop()
         self._reset_status()
 
-        if path and Path(path).exists():
+        selected_path = Path(path) if path else None
+        if (
+            selected_path
+            and selected_path.is_file()
+            and selected_path.suffix.lower() == ".uplugin"
+        ):
+            self._config.update_config(last_plugin_path=path)
+            self._plugin_panel.set_plugin_browse_path(path)
             self._console.append(tr("plugin_selected", path=path), LogLevel.INFO)
 
     # ------------------------------------------------------------------
