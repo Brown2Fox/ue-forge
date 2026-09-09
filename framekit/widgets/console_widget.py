@@ -651,6 +651,8 @@ class ConsoleWidget(QWidget):
                 border: none;
                 color: {COLORS['text_muted']};
                 padding: 8px;
+                selection-background-color: {COLORS['accent_bg_hover']};
+                selection-color: {COLORS['text_primary']};
             }}
         """)
         self._text_edit.setMaximumBlockCount(self.MAX_LINES)

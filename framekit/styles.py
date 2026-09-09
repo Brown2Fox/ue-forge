@@ -391,7 +391,8 @@ def get_main_stylesheet() -> str:
             font-family: {FONTS['family_mono']};
             font-size: {FONTS['size_xs']};
             padding: 8px;
-            selection-background-color: {COLORS['accent_bg']};
+            selection-background-color: {COLORS['accent_bg_hover']};
+            selection-color: {COLORS['text_primary']};
         }}
         
         /* ===== SPLITTER ===== */
