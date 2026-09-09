@@ -83,6 +83,12 @@ _TRANSLATIONS: dict[str, dict[str, str]] = {
         "locale_loaded": "Locale loaded successfully",
         "locale_load_error": "Failed to load locale file",
         "restart_to_apply": "Please restart the application to apply the language change.",
+        "appearance": "Appearance",
+        "theme": "Theme",
+        "dark_theme": "Dark",
+        "light_theme": "Light",
+        "theme_restart_note": "Note: Theme change requires application restart.",
+        "restart_to_apply_settings": "Please restart the application to apply the changes.",
     },
 
     "ru": {
@@ -142,6 +148,12 @@ _TRANSLATIONS: dict[str, dict[str, str]] = {
         "locale_loaded": "\u041b\u043e\u043a\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043d\u0430",
         "locale_load_error": "\u041e\u0448\u0438\u0431\u043a\u0430 \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0438 \u043b\u043e\u043a\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u0438",
         "restart_to_apply": "\u041f\u0435\u0440\u0435\u0437\u0430\u043f\u0443\u0441\u0442\u0438\u0442\u0435 \u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u0435 \u0434\u043b\u044f \u043f\u0440\u0438\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u0439.",
+        "appearance": "\u0412\u043d\u0435\u0448\u043d\u0438\u0439 \u0432\u0438\u0434",
+        "theme": "\u0422\u0435\u043c\u0430",
+        "dark_theme": "\u0422\u0451\u043c\u043d\u0430\u044f",
+        "light_theme": "\u0421\u0432\u0435\u0442\u043b\u0430\u044f",
+        "theme_restart_note": "\u041f\u0440\u0438\u043c\u0435\u0447\u0430\u043d\u0438\u0435: \u0414\u043b\u044f \u0441\u043c\u0435\u043d\u044b \u0442\u0435\u043c\u044b \u0442\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u0435\u0440\u0435\u0437\u0430\u043f\u0443\u0441\u043a \u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u044f.",
+        "restart_to_apply_settings": "\u041f\u0435\u0440\u0435\u0437\u0430\u043f\u0443\u0441\u0442\u0438\u0442\u0435 \u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u0435 \u0434\u043b\u044f \u043f\u0440\u0438\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u0439.",
     },
 }
 

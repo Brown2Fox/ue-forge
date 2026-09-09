@@ -4,13 +4,8 @@
 import sys
 from pathlib import Path
 
-from PyInstaller.utils.hooks import collect_all
-
-
 project_root = Path(SPECPATH).parent
 block_cipher = None
-
-winpty_datas, winpty_binaries, winpty_hidden = collect_all("winpty")
 
 # Private pages live in a git-ignored ue_forge/private/ package on the
 # maintainer's machine. Pull in their hidden imports when present so this single
@@ -86,19 +81,18 @@ _UE_FORGE_HIDDEN = [
 a = Analysis(
     [str(project_root / "ue_forge" / "__main__.py")],
     pathex=[str(project_root)],
-    binaries=winpty_binaries,
+    binaries=[],
     datas=[
         (str(project_root / "ue_forge" / "resources" / "icon.png"), "ue_forge/resources"),
         (str(project_root / "ue_forge" / "resources" / "icon.ico"), "ue_forge/resources"),
-    ] + winpty_datas,
+    ],
     hiddenimports=[
         "PySide6.QtCore", "PySide6.QtGui", "PySide6.QtWidgets", "PySide6.QtSvg",
         "pyside_frameless", "pyside_frameless.frameless_window", "pyside_frameless.drop_overlay",
         *_FRAMEKIT_HIDDEN,
         *_UE_FORGE_HIDDEN,
         *_PRIVATE_HIDDEN,
-        "winpty", "winpty.ptyprocess", "winpty.winpty_wrapper",
-    ] + winpty_hidden,
+    ],
     hookspath=[], hooksconfig={}, runtime_hooks=[],
     excludes=["tkinter", "matplotlib", "numpy", "pandas", "scipy", "PIL", "cv2"],
     win_no_prefer_redirects=False, win_private_assemblies=False,

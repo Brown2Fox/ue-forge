@@ -220,7 +220,7 @@ class ConsoleHighlighter(QSyntaxHighlighter):
 
         # --- Dim noise: timestamps, frame numbers ---
         dim_fmt = QTextCharFormat()
-        dim_fmt.setForeground(QColor("#52525b"))
+        dim_fmt.setForeground(QColor(COLORS["console_dim"]))
         # UE timestamp [YYYY.MM.DD-HH.MM.SS:mmm]
         self._rules.append((re.compile(r'\[\d{4}\.\d{2}\.\d{2}-[\d.]+:\d+\]'), dim_fmt))
         # Frame number [ N]
@@ -488,7 +488,7 @@ class ConsoleWidget(QWidget):
         header = QFrame()
         header.setStyleSheet(f"""
             QFrame {{
-                background-color: rgba(24, 24, 27, 0.5);
+                background-color: {COLORS['bg_panel']};
                 border: none;
                 border-bottom: 1px solid {COLORS['border_default']};
             }}
@@ -834,8 +834,8 @@ class ConsoleWidget(QWidget):
 
         # Highlight format
         highlight_fmt = QTextCharFormat()
-        highlight_fmt.setBackground(QColor("#854d0e"))  # amber-900
-        highlight_fmt.setForeground(QColor("#fef3c7"))  # amber-100
+        highlight_fmt.setBackground(QColor(COLORS["search_highlight_bg"]))
+        highlight_fmt.setForeground(QColor(COLORS["search_highlight_text"]))
 
         cursor = self._text_edit.textCursor()
         cursor.beginEditBlock()

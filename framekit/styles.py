@@ -1,18 +1,15 @@
-"""
-Default theme for framekit.
+"""Theme palettes and shared style tokens for framekit."""
 
-Modern dark theme based on zinc palette with cyan accents.
-Tokens are plain dicts — apps may mutate at startup to re-skin.
-"""
-
-# Color palette - zinc scale with cyan accent
-COLORS = {
+DARK_COLORS = {
     # Backgrounds
     "bg_primary": "#09090b",      # zinc-950
     "bg_secondary": "#18181b",    # zinc-900
     "bg_tertiary": "#27272a",     # zinc-800
     "bg_hover": "#3f3f46",        # zinc-700
     "bg_input": "#09090b",        # zinc-950
+    "bg_group": "rgba(24, 24, 27, 0.3)",
+    "bg_panel": "rgba(24, 24, 27, 0.5)",
+    "bg_item_hover": "rgba(39, 39, 42, 0.7)",
     
     # Borders
     "border_default": "#27272a",  # zinc-800
@@ -31,6 +28,7 @@ COLORS = {
     "accent_hover": "#67e8f9",    # cyan-300
     "accent_bg": "rgba(34, 211, 238, 0.2)",  # cyan-400/20
     "accent_bg_hover": "rgba(34, 211, 238, 0.3)",  # cyan-400/30
+    "text_on_accent": "#09090b",
     
     # Status
     "success": "#34d399",         # emerald-400
@@ -43,7 +41,66 @@ COLORS = {
     "error_bg": "rgba(248, 113, 113, 0.2)",
     "error_border": "rgba(248, 113, 113, 0.3)",
     "info": "#a1a1aa",            # zinc-400
+    "console_dim": "#52525b",
+    "search_highlight_bg": "#854d0e",
+    "search_highlight_text": "#fef3c7",
 }
+
+LIGHT_COLORS = {
+    "bg_primary": "#ffffff",
+    "bg_secondary": "#f4f4f5",
+    "bg_tertiary": "#e4e4e7",
+    "bg_hover": "#d4d4d8",
+    "bg_input": "#ffffff",
+    "bg_group": "rgba(244, 244, 245, 0.75)",
+    "bg_panel": "rgba(244, 244, 245, 0.9)",
+    "bg_item_hover": "rgba(228, 228, 231, 0.8)",
+    "border_default": "#d4d4d8",
+    "border_hover": "#a1a1aa",
+    "border_focus": "rgba(8, 145, 178, 0.5)",
+    "text_primary": "#18181b",
+    "text_secondary": "#3f3f46",
+    "text_muted": "#52525b",
+    "text_dim": "#71717a",
+    "text_placeholder": "#a1a1aa",
+    "accent_primary": "#0891b2",
+    "accent_hover": "#0e7490",
+    "accent_bg": "rgba(8, 145, 178, 0.14)",
+    "accent_bg_hover": "rgba(8, 145, 178, 0.22)",
+    "text_on_accent": "#ffffff",
+    "success": "#047857",
+    "success_bg": "rgba(5, 150, 105, 0.12)",
+    "success_border": "rgba(5, 150, 105, 0.3)",
+    "warning": "#b45309",
+    "warning_bg": "rgba(217, 119, 6, 0.12)",
+    "warning_border": "rgba(217, 119, 6, 0.3)",
+    "error": "#dc2626",
+    "error_bg": "rgba(220, 38, 38, 0.1)",
+    "error_border": "rgba(220, 38, 38, 0.25)",
+    "info": "#52525b",
+    "console_dim": "#71717a",
+    "search_highlight_bg": "#fef3c7",
+    "search_highlight_text": "#78350f",
+}
+
+THEMES = {"dark": DARK_COLORS, "light": LIGHT_COLORS}
+COLORS = DARK_COLORS.copy()
+_current_theme = "dark"
+
+
+def set_theme(theme: str) -> str:
+    """Activate a named palette and return the selected theme name."""
+    global _current_theme
+    selected = theme if theme in THEMES else "dark"
+    COLORS.clear()
+    COLORS.update(THEMES[selected])
+    _current_theme = selected
+    return selected
+
+
+def get_current_theme() -> str:
+    """Return the active theme name."""
+    return _current_theme
 
 # Font settings
 FONTS = {
@@ -248,13 +305,13 @@ def get_main_stylesheet() -> str:
         QPushButton[class="primary"] {{
             background-color: {COLORS['accent_primary']};
             border: none;
-            color: {COLORS['bg_primary']};
+            color: {COLORS['text_on_accent']};
             font-weight: 600;
             padding: 10px 24px;
         }}
         QPushButton[class="primary"]:hover {{
             background-color: {COLORS['accent_hover']};
-            color: {COLORS['bg_primary']};
+            color: {COLORS['text_on_accent']};
         }}
         QPushButton[class="primary"]:disabled {{
             background-color: {COLORS['bg_tertiary']};
@@ -354,7 +411,7 @@ def get_main_stylesheet() -> str:
         
         /* ===== GROUP BOX ===== */
         QGroupBox {{
-            background-color: rgba(24, 24, 27, 0.3);
+            background-color: {COLORS['bg_group']};
             border: 1px solid {COLORS['border_default']};
             border-radius: {RADIUS['lg']};
             margin-top: 16px;
@@ -411,7 +468,7 @@ def get_main_stylesheet() -> str:
             background-color: {COLORS['bg_tertiary']};
         }}
         QListView::item:hover, QListWidget::item:hover {{
-            background-color: rgba(39, 39, 42, 0.7);
+            background-color: {COLORS['bg_item_hover']};
         }}
         
         /* ===== MENU ===== */

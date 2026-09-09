@@ -466,7 +466,7 @@ class _ConfigPanel(DropZoneWidget):
                 color: {COLORS['text_primary']};
             }}
             QListWidget::item:hover {{
-                background-color: rgba(39, 39, 42, 0.7);
+                background-color: {COLORS['bg_item_hover']};
             }}
         """)
         self._cmd_list.currentItemChanged.connect(self._on_item_changed)
@@ -503,7 +503,7 @@ class _ConfigPanel(DropZoneWidget):
         f.setObjectName("cmdCard")
         f.setStyleSheet(f"""
             QFrame#cmdCard {{
-                background-color: rgba(24, 24, 27, 0.3);
+                background-color: {COLORS['bg_group']};
                 border: 1px solid {COLORS['border_default']};
                 border-radius: {RADIUS['lg']};
             }}
@@ -762,7 +762,7 @@ class _DetailPanel(QWidget):
             }}
             QPushButton:hover {{
                 background: {COLORS['accent_primary']};
-                color: {COLORS['bg_primary']};
+                color: {COLORS['text_on_accent']};
             }}
         """)
         self._back_to_console_btn.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -819,7 +819,7 @@ class _DetailPanel(QWidget):
         controls.setFixedHeight(64)
         controls.setStyleSheet(f"""
             QFrame#cmdControls {{
-                background: rgba(24, 24, 27, 0.5);
+                background: {COLORS['bg_panel']};
                 border: none;
                 border-top: 1px solid {COLORS['border_default']};
             }}
@@ -878,7 +878,7 @@ class _DetailPanel(QWidget):
         f.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         f.setStyleSheet(f"""
             QFrame#cmdDetailCard {{
-                background-color: rgba(24, 24, 27, 0.3);
+                background-color: {COLORS['bg_group']};
                 border: 1px solid {COLORS['border_default']};
                 border-radius: {RADIUS['lg']};
             }}

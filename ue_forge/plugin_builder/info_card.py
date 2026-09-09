@@ -180,7 +180,7 @@ class InfoCard(QWidget):
         self._card = QFrame()
         self._card.setStyleSheet(f"""
             QFrame {{
-                background-color: rgba(24, 24, 27, 0.5);
+                background-color: {COLORS['bg_panel']};
                 border: 1px solid {COLORS['border_default']};
                 border-radius: {RADIUS['lg']};
             }}
@@ -194,7 +194,7 @@ class InfoCard(QWidget):
         self._header = QFrame()
         self._header.setStyleSheet(f"""
             QFrame {{
-                background-color: rgba(39, 39, 42, 0.5);
+                background-color: {COLORS['bg_item_hover']};
                 border: none;
                 border-bottom: 1px solid {COLORS['border_default']};
                 border-top-left-radius: {RADIUS['lg']};

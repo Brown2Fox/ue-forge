@@ -2,7 +2,7 @@
 
 **English | [Русский](README_RU.md)**
 
-Desktop toolkit for Unreal Engine automation. Frameless dark UI, modular page architecture, runs standalone or as a combined app.
+Desktop toolkit for Unreal Engine automation. Frameless UI with dark and light themes, modular page architecture, runs standalone or as a combined app.
 
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)
 ![PySide6](https://img.shields.io/badge/PySide6-6.5%2B-green)

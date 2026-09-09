@@ -5,7 +5,7 @@ Each tool page can contribute its own settings tabs via
 ``get_settings_tabs() -> List[SettingsTab]``.  The host window
 (or standalone shell) collects them and passes them to this dialog.
 
-The dialog always includes a built-in Language tab.
+The dialog always includes built-in Appearance and Language tabs.
 """
 
 from abc import abstractmethod
@@ -146,6 +146,44 @@ class _LanguageTab(QWidget):
         return self._lang_combo.currentData()
 
 
+class _AppearanceTab(QWidget):
+    """Built-in application theme settings tab."""
+
+    def __init__(self, parent: Optional[QWidget] = None):
+        super().__init__(parent)
+        self._initial_theme = get_config_manager().load_config().theme
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(12, 12, 12, 12)
+        layout.setSpacing(16)
+
+        group = QGroupBox(tr("theme"))
+        group_layout = QVBoxLayout(group)
+        self._theme_combo = QComboBox()
+        self._theme_combo.addItem(tr("dark_theme"), "dark")
+        self._theme_combo.addItem(tr("light_theme"), "light")
+        index = self._theme_combo.findData(self._initial_theme)
+        self._theme_combo.setCurrentIndex(max(index, 0))
+        group_layout.addWidget(self._theme_combo)
+
+        note = QLabel(tr("theme_restart_note"))
+        note.setStyleSheet(
+            f"color: {COLORS['text_dim']}; font-size: {FONTS['size_xs']}; "
+            "font-style: italic;"
+        )
+        group_layout.addWidget(note)
+        layout.addWidget(group)
+        layout.addStretch()
+
+    @property
+    def theme_changed(self) -> bool:
+        return self.selected_theme != self._initial_theme
+
+    @property
+    def selected_theme(self) -> str:
+        return self._theme_combo.currentData()
+
+
 # ---------------------------------------------------------------------------
 # Settings dialog
 # ---------------------------------------------------------------------------
@@ -154,7 +192,7 @@ class SettingsDialog(QDialog):
     """
     Application settings dialog with dynamic tabs.
 
-    Always contains a Language tab.  Additional tabs from tool pages
+    Always contains Appearance and Language tabs. Additional tabs from tool pages
     are passed in via *extra_tabs*.
     """
 
@@ -243,6 +281,9 @@ class SettingsDialog(QDialog):
         for tab in self._extra_tabs:
             self._tabs.addTab(tab, tab.tab_title())
 
+        self._appearance_tab = _AppearanceTab()
+        self._tabs.addTab(self._appearance_tab, tr("appearance"))
+
         # Built-in language tab last
         self._language_tab = _LanguageTab()
         self._tabs.addTab(self._language_tab, tr("language"))
@@ -267,11 +308,14 @@ class SettingsDialog(QDialog):
         # Apply language
         lang = self._language_tab.selected_language
         set_language(lang)
-        self._config.update_config(language=lang)
+        self._config.update_config(
+            language=lang,
+            theme=self._appearance_tab.selected_theme,
+        )
 
-        if self._language_tab.language_changed:
+        if self._language_tab.language_changed or self._appearance_tab.theme_changed:
             MessageDialog.information(
-                self, tr("language"), tr("restart_to_apply"),
+                self, tr("settings"), tr("restart_to_apply_settings"),
             )
 
         self.accept()

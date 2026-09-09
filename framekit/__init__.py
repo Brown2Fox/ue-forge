@@ -32,7 +32,17 @@ from .platform import (
     set_platform_handler,
 )
 from .shell import HostWindow, SinglePageShell, ToolPage
-from .styles import COLORS, FONTS, RADIUS, SPACING, get_main_stylesheet
+from .styles import (
+    COLORS,
+    DARK_COLORS,
+    FONTS,
+    LIGHT_COLORS,
+    RADIUS,
+    SPACING,
+    get_current_theme,
+    get_main_stylesheet,
+    set_theme,
+)
 from .types import LogLevel, LogMessage, StatusKind
 
 __all__ = [
@@ -66,10 +76,14 @@ __all__ = [
     "default_handler_for",
     # Styles / icons
     "COLORS",
+    "DARK_COLORS",
+    "LIGHT_COLORS",
     "FONTS",
     "RADIUS",
     "SPACING",
     "get_main_stylesheet",
+    "get_current_theme",
+    "set_theme",
     "Icons",
     "get_indicator_icon_path",
     # Shell

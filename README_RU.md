@@ -2,7 +2,7 @@
 
 **[English](README.md) | Русский**
 
-Десктопный тулкит для автоматизации работы с Unreal Engine. Frameless тёмный UI, модульная архитектура страниц, работает отдельно или как единое приложение.
+Десктопный тулкит для автоматизации работы с Unreal Engine. Frameless UI со светлой и тёмной темами, модульная архитектура страниц, работает отдельно или как единое приложение.
 
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)
 ![PySide6](https://img.shields.io/badge/PySide6-6.5%2B-green)

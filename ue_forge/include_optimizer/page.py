@@ -623,7 +623,7 @@ class _ConfigPanel(DropZoneWidget):
         f.setObjectName("optimizerCard")
         f.setStyleSheet(f"""
             QFrame#optimizerCard {{
-                background-color: rgba(24, 24, 27, 0.3);
+                background-color: {COLORS['bg_group']};
                 border: 1px solid {COLORS['border_default']};
                 border-radius: {RADIUS['lg']};
             }}
@@ -911,7 +911,7 @@ class IncludeOptimizerPage(QWidget):
         controls.setFixedHeight(64)
         controls.setStyleSheet(f"""
             QFrame#optControls {{
-                background: rgba(24, 24, 27, 0.5);
+                background: {COLORS['bg_panel']};
                 border: none;
                 border-top: 1px solid {COLORS['border_default']};
             }}

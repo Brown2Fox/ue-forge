@@ -17,6 +17,7 @@ from PySide6.QtWidgets import QApplication, QWidget
 
 from framekit.config import ConfigManager, get_config_manager, set_config_manager
 from framekit.localization import detect_system_language, set_language
+from framekit.styles import set_theme
 from framekit.platform import (
     PlatformHandler,
     default_handler_for,
@@ -61,6 +62,7 @@ def _bootstrap_state(
 
     cfg = get_config_manager().load_config()
     set_language(cfg.language or detect_system_language())
+    set_theme(cfg.theme)
 
 
 def run_standalone(

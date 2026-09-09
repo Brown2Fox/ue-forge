@@ -200,7 +200,7 @@ class PluginPanel(DropZoneWidget):
         engine_card = QFrame()
         engine_card.setStyleSheet(f"""
             QFrame {{
-                background-color: rgba(24, 24, 27, 0.3);
+                background-color: {COLORS['bg_group']};
                 border: 1px solid {COLORS['border_default']};
                 border-radius: {RADIUS['lg']};
             }}
@@ -552,7 +552,7 @@ class PluginBuilderPage(QWidget):
         controls.setFixedHeight(64)
         controls.setStyleSheet(f"""
             QFrame#builderControls {{
-                background: rgba(24, 24, 27, 0.5);
+                background: {COLORS['bg_panel']};
                 border: none;
                 border-top: 1px solid {COLORS['border_default']};
             }}
