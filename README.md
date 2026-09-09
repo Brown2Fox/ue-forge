@@ -92,6 +92,8 @@ python -m ue_forge.commandlet_runner
 
 ### Build standalone exe
 
+Run `tools/build.cmd` to build the combined application with PowerShell 7, or use the command line:
+
 ```bash
 pip install pyinstaller
 pyinstaller specs/ue_forge.spec

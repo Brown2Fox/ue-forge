@@ -92,6 +92,8 @@ python -m ue_forge.commandlet_runner
 
 ### Сборка standalone exe
 
+Запустите `tools/build.cmd`, чтобы собрать общее приложение через PowerShell 7, либо используйте командную строку:
+
 ```bash
 pip install pyinstaller
 pyinstaller specs/ue_forge.spec
