@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from framekit.styles import COLORS, FONTS
+from framekit.styles import COLORS, FONTS, get_combo_popup_stylesheet
 from framekit.config import get_config_manager
 from framekit.localization import (
     tr,
@@ -85,6 +85,7 @@ class _LanguageTab(QWidget):
         lang_layout = QVBoxLayout(lang_group)
 
         self._lang_combo = QComboBox()
+        self._lang_combo.view().setStyleSheet(get_combo_popup_stylesheet())
         for code, name in get_available_languages().items():
             self._lang_combo.addItem(name, code)
 
@@ -160,6 +161,7 @@ class _AppearanceTab(QWidget):
         group = QGroupBox(tr("theme"))
         group_layout = QVBoxLayout(group)
         self._theme_combo = QComboBox()
+        self._theme_combo.view().setStyleSheet(get_combo_popup_stylesheet())
         self._theme_combo.addItem(tr("dark_theme"), "dark")
         self._theme_combo.addItem(tr("light_theme"), "light")
         index = self._theme_combo.findData(self._initial_theme)

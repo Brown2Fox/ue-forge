@@ -102,6 +102,30 @@ def get_current_theme() -> str:
     """Return the active theme name."""
     return _current_theme
 
+
+def get_combo_popup_stylesheet() -> str:
+    """Return the standalone style used by combo box popup views."""
+    return f"""
+        QAbstractItemView {{
+            background-color: {COLORS['bg_secondary']};
+            border: 1px solid {COLORS['border_default']};
+            border-radius: {RADIUS['md']};
+            padding: 4px;
+            color: {COLORS['text_primary']};
+            selection-background-color: {COLORS['bg_tertiary']};
+            selection-color: {COLORS['text_primary']};
+            outline: none;
+        }}
+        QAbstractItemView::item {{
+            padding: 8px 12px;
+            border-radius: {RADIUS['sm']};
+        }}
+        QAbstractItemView::item:selected {{
+            background-color: {COLORS['bg_tertiary']};
+            color: {COLORS['text_primary']};
+        }}
+    """
+
 # Font settings
 FONTS = {
     "family": "Segoe UI, SF Pro Display, Ubuntu, sans-serif",

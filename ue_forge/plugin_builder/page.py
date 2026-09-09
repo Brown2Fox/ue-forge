@@ -24,7 +24,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QTimer, Signal, Slot, QThread, QObject
 
-from framekit.styles import COLORS, FONTS, RADIUS
+from framekit.styles import COLORS, FONTS, RADIUS, get_combo_popup_stylesheet
 from framekit.icons import Icons
 from framekit.widgets import ConsoleWidget, PathInput, StatusBadge
 from pyside_frameless import DropZoneWidget
@@ -198,8 +198,9 @@ class PluginPanel(DropZoneWidget):
 
         # ===== TARGET ENGINE SECTION =====
         engine_card = QFrame()
+        engine_card.setObjectName("engineCard")
         engine_card.setStyleSheet(f"""
-            QFrame {{
+            QFrame#engineCard {{
                 background-color: {COLORS['bg_group']};
                 border: 1px solid {COLORS['border_default']};
                 border-radius: {RADIUS['lg']};
@@ -257,6 +258,7 @@ class PluginPanel(DropZoneWidget):
         selector_row.addWidget(target_label)
 
         self._engine_combo = QComboBox()
+        self._engine_combo.view().setStyleSheet(get_combo_popup_stylesheet())
         self._engine_combo.setMinimumWidth(160)
         self._engine_combo.setPlaceholderText(tr("select_version"))
         self._engine_combo.currentIndexChanged.connect(self._check_version_match)

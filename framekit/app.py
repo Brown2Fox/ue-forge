@@ -12,12 +12,13 @@ import sys
 from pathlib import Path
 from typing import Callable
 
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication, QWidget
 
 from framekit.config import ConfigManager, get_config_manager, set_config_manager
 from framekit.localization import detect_system_language, set_language
-from framekit.styles import set_theme
+from framekit.styles import get_main_stylesheet, set_theme
 from framekit.platform import (
     PlatformHandler,
     default_handler_for,
@@ -43,6 +44,7 @@ def _build_qapp(
     app = QApplication([sys.argv[0]])
     app.setApplicationName(app_name)
     app.setOrganizationName(org_name)
+    app.setEffectEnabled(Qt.UIEffect.UI_AnimateCombo, False)
 
     font = QFont()
     font.setFamily(font_family or _platform_font_family())
@@ -63,6 +65,9 @@ def _bootstrap_state(
     cfg = get_config_manager().load_config()
     set_language(cfg.language or detect_system_language())
     set_theme(cfg.theme)
+    app = QApplication.instance()
+    if app is not None:
+        app.setStyleSheet(get_main_stylesheet())
 
 
 def run_standalone(
