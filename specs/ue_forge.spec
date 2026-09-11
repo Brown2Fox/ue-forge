@@ -1,11 +1,16 @@
 # -*- mode: python ; coding: utf-8 -*-
 """PyInstaller spec for UE Forge (combined host)."""
 
+import os
 import sys
 from pathlib import Path
 
 project_root = Path(SPECPATH).parent
 block_cipher = None
+
+if os.name == "nt":
+    system_dll_path = str(Path(os.environ["SystemRoot"]) / "System32")
+    os.environ["PATH"] = os.pathsep.join((system_dll_path, os.environ.get("PATH", "")))
 
 # Private pages live in a git-ignored ue_forge/private/ package on the
 # maintainer's machine. Pull in their hidden imports when present so this single

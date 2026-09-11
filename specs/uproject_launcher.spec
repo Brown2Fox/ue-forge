@@ -1,11 +1,16 @@
 # -*- mode: python ; coding: utf-8 -*-
 """PyInstaller spec for the UProject Launcher."""
 
+import os
 from pathlib import Path
 
 
 project_root = Path(SPECPATH).parent
 block_cipher = None
+
+if os.name == "nt":
+    system_dll_path = str(Path(os.environ["SystemRoot"]) / "System32")
+    os.environ["PATH"] = os.pathsep.join((system_dll_path, os.environ.get("PATH", "")))
 
 
 _HIDDEN = [
