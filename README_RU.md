@@ -21,6 +21,9 @@ UE Forge — хост-окно с сайдбаром, в которое загр
 ![plugin_builder_ru.png](ue_forge%2Fplugin_builder%2Fscreenshots%2Fplugin_builder_ru.png)
 Сборка UE-плагинов из исходников через UAT. Автоматическое обнаружение установленных движков, валидация `.uplugin`, живая консоль сборки. Расширенные флаги, выбор платформ, настройки на каждый движок.
 
+### [UProject Launcher](ue_forge/uproject_launcher/docs/README_RU.md)
+Запуск Unreal-проекта с персональными плагинами движка, включёнными только для текущего процесса. Профиль `.ulaunch` хранит пути к проекту и движку, выбор плагинов и дополнительные аргументы, не изменяя общий `.uproject`.
+
 ### [Renamer](ue_forge/renamer/docs/README_RU.md)
 ![renamer_ru.png](ue_forge%2Frenamer%2Fscreenshots%2Frenamer_ru.png)
 Полное переименование UE-плагинов и проектов. Обрабатывает `.uplugin` / `.uproject` JSON, имена классов и конструкторы в `.Build.cs`, API-макросы, include guard'ы, `IMPLEMENT_MODULE`, конфиги, комментарии. Diff-превью перед применением, бэкап при выполнении.
@@ -55,6 +58,7 @@ ue_forge/
 ├── assets.py              # Поиск ресурсов (dev + frozen)
 ├── resources/             # Иконка приложения
 ├── plugin_builder/        # Модуль Plugin Builder
+├── uproject_launcher/     # Модуль запуска проектов
 ├── renamer/               # Модуль Renamer
 ├── include_optimizer/     # Модуль Include Optimizer
 ├── commandlet_runner/     # Модуль Commandlet Runner
@@ -85,6 +89,7 @@ python -m ue_forge
 
 # Отдельные инструменты
 python -m ue_forge.plugin_builder
+python -m ue_forge.uproject_launcher
 python -m ue_forge.renamer
 python -m ue_forge.include_optimizer
 python -m ue_forge.commandlet_runner
@@ -92,14 +97,16 @@ python -m ue_forge.commandlet_runner
 
 ### Сборка standalone exe
 
-Запустите `tools/build.cmd`, чтобы собрать общее приложение через PowerShell 7, либо используйте командную строку:
+Запустите `tools/build-forge.ps1`, чтобы собрать общее приложение, или `tools/build-all.ps1`, чтобы собрать Forge и все standalone-инструменты через PowerShell 7. Также можно использовать командную строку:
 
 ```bash
 pip install pyinstaller
 pyinstaller specs/ue_forge.spec
 ```
 
-Сборка отдельных инструментов: `specs/plugin_builder.spec`, `specs/renamer.spec`, `specs/include_optimizer.spec`, `specs/commandlet_runner.spec`.
+Сборка отдельных инструментов: `specs/plugin_builder.spec`, `specs/uproject_launcher.spec`, `specs/renamer.spec`, `specs/include_optimizer.spec`, `specs/commandlet_runner.spec`.
+
+В `tools/` доступны PowerShell-скрипты: `build-all.ps1`, `build-forge.ps1`, `build-plugin-builder.ps1`, `build-uproject-launcher.ps1`, `build-renamer.ps1`, `build-include-optimizer.ps1` и `build-commandlet-runner.ps1`.
 
 ## Зависимости
 

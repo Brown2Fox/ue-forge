@@ -21,6 +21,9 @@ UE Forge is a host window with a sidebar that loads tool pages. Each tool can al
 ![plugin_builder_en.png](ue_forge%2Fplugin_builder%2Fscreenshots%2Fplugin_builder_en.png)
 Build UE plugins from source via UAT. Auto-discovers engine installations, validates `.uplugin` structure, shows live build console. Supports advanced build flags, platform selection, per-engine settings.
 
+### [UProject Launcher](ue_forge/uproject_launcher/docs/README.md)
+Launch an Unreal project with personal engine plugins enabled only for the current process. `.ulaunch` profiles keep the project and engine paths, plugin selection, and additional command-line arguments outside the shared `.uproject` descriptor.
+
 ### [Renamer](ue_forge/renamer/docs/README.md)
 ![renamer_en.png](ue_forge%2Frenamer%2Fscreenshots%2Frenamer_en.png)
 Rename UE plugins and projects end-to-end. Handles `.uplugin` / `.uproject` JSON, `.Build.cs` class names and constructors, API macros, include guards, `IMPLEMENT_MODULE`, config files, comments. Diff-style preview before execution, backup on apply.
@@ -55,6 +58,7 @@ ue_forge/
 ├── assets.py              # Resource path resolution (dev + frozen)
 ├── resources/             # App icon
 ├── plugin_builder/        # Plugin Builder module
+├── uproject_launcher/     # UProject Launcher module
 ├── renamer/               # Renamer module
 ├── include_optimizer/     # Include Optimizer module
 ├── commandlet_runner/     # Commandlet Runner module
@@ -85,6 +89,7 @@ python -m ue_forge
 
 # Individual tools
 python -m ue_forge.plugin_builder
+python -m ue_forge.uproject_launcher
 python -m ue_forge.renamer
 python -m ue_forge.include_optimizer
 python -m ue_forge.commandlet_runner
@@ -92,14 +97,16 @@ python -m ue_forge.commandlet_runner
 
 ### Build standalone exe
 
-Run `tools/build.cmd` to build the combined application with PowerShell 7, or use the command line:
+Run `tools/build-forge.ps1` to build the combined application or `tools/build-all.ps1` to build Forge and every standalone tool with PowerShell 7. You can also use the command line:
 
 ```bash
 pip install pyinstaller
 pyinstaller specs/ue_forge.spec
 ```
 
-Individual tool builds: `specs/plugin_builder.spec`, `specs/renamer.spec`, `specs/include_optimizer.spec`, `specs/commandlet_runner.spec`.
+Individual tool builds: `specs/plugin_builder.spec`, `specs/uproject_launcher.spec`, `specs/renamer.spec`, `specs/include_optimizer.spec`, `specs/commandlet_runner.spec`.
+
+PowerShell build scripts are available in `tools/`: `build-all.ps1`, `build-forge.ps1`, `build-plugin-builder.ps1`, `build-uproject-launcher.ps1`, `build-renamer.ps1`, `build-include-optimizer.ps1`, and `build-commandlet-runner.ps1`.
 
 ## Dependencies
 
