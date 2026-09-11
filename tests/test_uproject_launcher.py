@@ -50,6 +50,7 @@ class UProjectLauncherCoreTests(unittest.TestCase):
         profile_path = self.root / "Profiles" / "Developer.ulaunch"
         project_path = self.root / "Game" / "Game.uproject"
         engine_path = self.root / "UE_5.8"
+        (engine_path / "Engine" / "Plugins").mkdir(parents=True)
         self._write_json(project_path, {"EngineAssociation": "UE_5.8"})
         engine = EngineInfo("5.8", engine_path)
 
@@ -58,7 +59,7 @@ class UProjectLauncherCoreTests(unittest.TestCase):
         self.assertEqual(resolved_project, project_path.resolve())
         self.assertEqual(resolve_engine(resolved_project, {"5.8": engine}), engine)
         self.assertEqual(resolve_engine_override("5.8", profile_path, {"5.8": engine}), engine)
-        self.assertEqual(resolve_engine_override(str(engine_path), profile_path, {}), EngineInfo("5.8", engine_path))
+        self.assertEqual(resolve_engine_override(str(engine_path), profile_path, {}), EngineInfo("5.8", engine_path.resolve()))
 
     def test_unmatched_engine_is_rejected(self) -> None:
         project_path = self.root / "Game.uproject"

@@ -18,8 +18,12 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QHeaderView,
     QLabel,
+    QLayout,
     QLineEdit,
     QPushButton,
+    QScrollArea,
+    QSizePolicy,
+    QSplitter,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -223,8 +227,33 @@ class UProjectLauncherPage(QWidget):
 
     def _setup_ui(self) -> None:
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(24, 24, 24, 20)
-        layout.setSpacing(16)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+
+        self._splitter = QSplitter(Qt.Orientation.Horizontal)
+        self._splitter.setHandleWidth(1)
+        self._splitter.setChildrenCollapsible(False)
+        self._splitter.setStyleSheet(
+            f"QSplitter::handle {{ background-color: {COLORS['border_default']}; }}"
+        )
+        layout.addWidget(self._splitter)
+
+        self._settings_scroll = QScrollArea()
+        self._settings_scroll.setObjectName("launcherSettingsScroll")
+        self._settings_scroll.setWidgetResizable(True)
+        self._settings_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self._settings_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self._settings_scroll.setMinimumWidth(480)
+        self._settings_scroll.setStyleSheet(
+            f"QScrollArea#launcherSettingsScroll {{ background-color: {COLORS['bg_primary']}; }}"
+        )
+        settings = QWidget()
+        settings_layout = QVBoxLayout(settings)
+        settings_layout.setContentsMargins(24, 24, 24, 20)
+        settings_layout.setSpacing(16)
+        settings_layout.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+        self._settings_scroll.setWidget(settings)
+        self._splitter.addWidget(self._settings_scroll)
 
         header = QHBoxLayout()
         icon = QLabel()
@@ -232,6 +261,7 @@ class UProjectLauncherPage(QWidget):
         icon.setFixedSize(22, 22)
         header.addWidget(icon)
         title = QLabel(tr("local_profile"))
+        title.setWordWrap(True)
         title.setStyleSheet(f"color: {COLORS['text_primary']}; font-size: {FONTS['size_xl']}; font-weight: 600;")
         header.addWidget(title)
         header.addStretch()
@@ -239,7 +269,7 @@ class UProjectLauncherPage(QWidget):
         self._new_button.setIcon(Icons.get_icon("FILE_CODE", 14, COLORS["text_dim"]))
         self._new_button.clicked.connect(self._create_profile)
         header.addWidget(self._new_button)
-        layout.addLayout(header)
+        settings_layout.addLayout(header)
 
         self._profile_input = PathInput(
             placeholder=tr("profile_path"),
@@ -247,13 +277,14 @@ class UProjectLauncherPage(QWidget):
             file_filter=tr("profile_filter"),
         )
         self._profile_input.path_changed.connect(self._on_profile_path_changed)
-        layout.addWidget(self._profile_input)
+        settings_layout.addWidget(self._profile_input)
 
         self._profile_content = QWidget()
         profile_layout = QVBoxLayout(self._profile_content)
         profile_layout.setContentsMargins(0, 0, 0, 0)
         profile_layout.setSpacing(16)
-        layout.addWidget(self._profile_content, 1)
+        settings_layout.addWidget(self._profile_content)
+        settings_layout.addStretch()
 
         context_card = QFrame()
         context_card.setObjectName("launcherContextCard")
@@ -277,64 +308,39 @@ class UProjectLauncherPage(QWidget):
         self._project_input = PathInput(
             label=tr("project_path"),
             placeholder=tr("project_path_placeholder"),
-            hint=tr("project_path_hint"),
             icon_name="FOLDER_OPEN",
             file_filter=tr("project_filter"),
         )
         self._project_input.path_changed.connect(self._on_project_changed)
-        self._project_input.setMinimumHeight(84)
+        self._project_input.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         context_layout.addWidget(self._project_input)
+        project_hint = QLabel(tr("project_path_hint"))
+        project_hint.setWordWrap(True)
+        project_hint.setStyleSheet(f"color: {COLORS['text_placeholder']}; font-size: {FONTS['size_xs']};")
+        context_layout.addWidget(project_hint)
         self._engine_input = PathInput(
             label=tr("engine"),
             placeholder=tr("engine_path_placeholder"),
-            hint=tr("engine_path_hint"),
             icon_name="HARD_DRIVE",
             directory_mode=True,
         )
         self._engine_input.path_changed.connect(self._on_engine_changed)
-        self._engine_input.setMinimumHeight(84)
+        self._engine_input.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         context_layout.addWidget(self._engine_input)
+        engine_hint = QLabel(tr("engine_path_hint"))
+        engine_hint.setWordWrap(True)
+        engine_hint.setStyleSheet(f"color: {COLORS['text_placeholder']}; font-size: {FONTS['size_xs']};")
+        context_layout.addWidget(engine_hint)
         self._engine_label = QLabel(tr("engine_unresolved"))
+        self._engine_label.setWordWrap(True)
+        self._engine_label.setTextFormat(Qt.TextFormat.PlainText)
+        self._engine_label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         self._engine_label.setStyleSheet(f"color: {COLORS['warning']}; font-family: {FONTS['family_mono']};")
         context_layout.addWidget(self._engine_label)
         profile_layout.addWidget(context_card)
 
-        plugins_header = QHBoxLayout()
-        plugins_title = QLabel(tr("local_plugins"))
-        plugins_title.setStyleSheet(f"color: {COLORS['text_secondary']}; font-weight: 500;")
-        plugins_header.addWidget(plugins_title)
-        plugins_header.addStretch()
-        self._remove_button = QPushButton(f"  {tr('remove_plugin')}")
-        self._remove_button.setIcon(Icons.get_icon("TRASH_2", 14, COLORS["text_dim"]))
-        self._remove_button.clicked.connect(self._remove_selected)
-        plugins_header.addWidget(self._remove_button)
-        self._scan_button = QPushButton(f"  {tr('scan_plugins')}")
-        self._scan_button.setIcon(Icons.get_icon("SEARCH", 14, COLORS["text_dim"]))
-        self._scan_button.clicked.connect(self._scan_plugins)
-        plugins_header.addWidget(self._scan_button)
-        profile_layout.addLayout(plugins_header)
-
-        self._table = QTableWidget()
-        self._table.setColumnCount(5)
-        self._table.setHorizontalHeaderLabels([
-            tr("enabled"), tr("plugin_name"), tr("plugin_version"), tr("plugin_author"), tr("plugin_description")
-        ])
-        self._table.setAlternatingRowColors(True)
-        self._table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
-        self._table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
-        self._table.verticalHeader().setVisible(False)
-        self._table.setStyleSheet(_table_stylesheet())
-        table_header = self._table.horizontalHeader()
-        for column in range(4):
-            table_header.setSectionResizeMode(column, QHeaderView.ResizeMode.Interactive)
-        table_header.setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
-        for column, width in enumerate((80, 220, 100, 160)):
-            self._table.setColumnWidth(column, width)
-        self._table.itemChanged.connect(self._on_plugin_changed)
-        self._table.itemSelectionChanged.connect(self._update_controls)
-        profile_layout.addWidget(self._table, 1)
-
         args_label = QLabel(tr("additional_arguments"))
+        args_label.setWordWrap(True)
         args_label.setStyleSheet(f"color: {COLORS['text_muted']}; font-size: {FONTS['size_xs']}; font-weight: 500;")
         profile_layout.addWidget(args_label)
         self._arguments = QLineEdit()
@@ -349,7 +355,71 @@ class UProjectLauncherPage(QWidget):
         self._command_preview.setReadOnly(True)
         profile_layout.addWidget(self._command_preview)
 
+        plugins_panel = QWidget()
+        plugins_panel.setMinimumWidth(400)
+        plugins_layout = QVBoxLayout(plugins_panel)
+        plugins_layout.setContentsMargins(0, 0, 0, 0)
+        plugins_layout.setSpacing(0)
+        self._plugins_content = QWidget()
+        plugins_layout.addWidget(self._plugins_content)
+        plugins_content_layout = QVBoxLayout(self._plugins_content)
+        plugins_content_layout.setContentsMargins(0, 0, 0, 0)
+        plugins_content_layout.setSpacing(0)
+
+        plugins_toolbar = QWidget()
+        plugins_header = QHBoxLayout()
+        plugins_header.setContentsMargins(16, 16, 16, 16)
+        plugins_toolbar.setLayout(plugins_header)
+        plugins_title = QLabel(tr("local_plugins"))
+        plugins_title.setWordWrap(True)
+        plugins_title.setStyleSheet(f"color: {COLORS['text_secondary']}; font-weight: 500;")
+        plugins_header.addWidget(plugins_title)
+        plugins_header.addStretch()
+        self._remove_button = QPushButton(f"  {tr('remove_plugin')}")
+        self._remove_button.setIcon(Icons.get_icon("TRASH_2", 14, COLORS["text_dim"]))
+        self._remove_button.clicked.connect(self._remove_selected)
+        plugins_header.addWidget(self._remove_button)
+        self._scan_button = QPushButton(f"  {tr('scan_plugins')}")
+        self._scan_button.setIcon(Icons.get_icon("SEARCH", 14, COLORS["text_dim"]))
+        self._scan_button.clicked.connect(self._scan_plugins)
+        plugins_header.addWidget(self._scan_button)
+        plugins_content_layout.addWidget(plugins_toolbar)
+
+        self._table = QTableWidget()
+        self._table.setColumnCount(5)
+        self._table.setHorizontalHeaderLabels([
+            tr("enabled"), tr("plugin_name"), tr("plugin_version"), tr("plugin_author"), tr("plugin_description")
+        ])
+        self._table.setAlternatingRowColors(True)
+        self._table.setWordWrap(False)
+        self._table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self._table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self._table.verticalHeader().setVisible(False)
+        self._table.setStyleSheet(_table_stylesheet())
+        table_header = self._table.horizontalHeader()
+        for column in range(4):
+            table_header.setSectionResizeMode(column, QHeaderView.ResizeMode.Interactive)
+        table_header.setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
+        table_header.setMinimumSectionSize(60)
+        for column, width in enumerate((76, 180, 70, 110)):
+            self._table.setColumnWidth(column, width)
+        self._table.itemChanged.connect(self._on_plugin_changed)
+        self._table.itemSelectionChanged.connect(self._update_controls)
+        plugins_content_layout.addWidget(self._table, 1)
+
+        controls_panel = QFrame()
+        controls_panel.setObjectName("launcherControls")
+        controls_panel.setStyleSheet(f"""
+            QFrame#launcherControls {{
+                background-color: {COLORS['bg_panel']};
+                border: none;
+                border-top: 1px solid {COLORS['border_default']};
+            }}
+        """)
         controls = QHBoxLayout()
+        controls.setContentsMargins(16, 14, 16, 14)
+        controls.setSpacing(12)
+        controls_panel.setLayout(controls)
         controls.addStretch()
         self._save_button = QPushButton(f"  {tr('save_profile')}")
         self._save_button.setIcon(Icons.get_icon("FILE_CODE", 14, COLORS["text_dim"]))
@@ -361,9 +431,17 @@ class UProjectLauncherPage(QWidget):
         self._launch_button.setMinimumWidth(180)
         self._launch_button.clicked.connect(self._launch)
         controls.addWidget(self._launch_button)
-        profile_layout.addLayout(controls)
-        self._profile_content.hide()
+        plugins_content_layout.addWidget(controls_panel)
+        self._splitter.addWidget(plugins_panel)
+        self._splitter.setSizes([480, 720])
+        self._splitter.setStretchFactor(0, 0)
+        self._splitter.setStretchFactor(1, 1)
+        self._set_profile_visible(False)
         self._update_controls()
+
+    def _set_profile_visible(self, visible: bool) -> None:
+        self._profile_content.setVisible(visible)
+        self._plugins_content.setVisible(visible)
 
     def _load_config(self) -> None:
         config = self._config.load_config()
@@ -406,10 +484,10 @@ class UProjectLauncherPage(QWidget):
             return
         candidate = Path(path)
         if not candidate.is_file() or candidate.suffix.lower() != ".ulaunch":
-            self._profile_content.hide()
+            self._set_profile_visible(False)
             return
         if self._profile_path and candidate.resolve() == self._profile_path.resolve():
-            self._profile_content.show()
+            self._set_profile_visible(True)
             return
         if not self._confirm_discard():
             self._set_profile_input(self._profile_path) if self._profile_path else None
@@ -420,7 +498,7 @@ class UProjectLauncherPage(QWidget):
         try:
             profile = load_profile(profile_path)
         except ProfileError as error:
-            self._profile_content.hide()
+            self._set_profile_visible(False)
             MessageDialog.error(self, tr("error"), tr("profile_load_failed", error=error))
             return False
         self._profile = profile
@@ -435,7 +513,7 @@ class UProjectLauncherPage(QWidget):
         self._config.update_config(last_uproject_launcher_path=str(self._profile_path))
         self._refresh_context(load_metadata=load_metadata)
         self._refresh_table()
-        self._profile_content.show()
+        self._set_profile_visible(True)
         self._update_controls()
         return True
 
@@ -619,9 +697,12 @@ class UProjectLauncherPage(QWidget):
             command = self._command()
         except ProfileError:
             self._command_preview.clear()
+            self._command_preview.setToolTip("")
             return
         preview = subprocess.list2cmdline(command) if os.name == "nt" else shlex.join(command)
         self._command_preview.setText(preview)
+        self._command_preview.setCursorPosition(0)
+        self._command_preview.setToolTip(preview)
 
     def _update_controls(self) -> None:
         has_profile = self._profile_path is not None

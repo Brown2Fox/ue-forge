@@ -2,6 +2,8 @@
 
 UProject Launcher opens an Unreal Engine project with selected engine plugins enabled only for that editor process. The project descriptor remains unchanged.
 
+Launch settings appear on the left and the plugin list on the right. The settings scroll in smaller windows; Save and Launch Project remain visible below the plugin list. Both the standalone launcher and UE Forge use this layout.
+
 ## Profile format
 
 A `.ulaunch` profile is JSON:

@@ -6,7 +6,7 @@ from framekit.localization import register_translations
 register_translations({
     "en": {
         "uproject_launcher": "UProject Launcher",
-        "local_profile": "Local launch profile",
+        "local_profile": "Launch profile",
         "profile_path": "Path to .ulaunch profile...",
         "new_profile": "New Profile",
         "project_path": "Project",
