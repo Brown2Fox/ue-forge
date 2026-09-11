@@ -22,6 +22,7 @@ ue-plugin-builder = "ue_forge.plugin_builder.__main__:main"
 ue-renamer = "ue_forge.renamer.__main__:main"
 ue-include-optimizer = "ue_forge.include_optimizer.__main__:main"
 ue-commandlet-runner = "ue_forge.commandlet_runner.__main__:main"
+ue-uproject-launcher = "ue_forge.uproject_launcher.__main__:main"
 
 [tool.setuptools.packages.find]
 include = ["pyside_frameless*", "framekit*", "ue_forge*"]

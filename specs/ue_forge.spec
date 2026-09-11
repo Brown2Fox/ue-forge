@@ -60,6 +60,11 @@ _UE_FORGE_HIDDEN = [
     "ue_forge.plugin_builder.command_dialog",
     "ue_forge.plugin_builder.engine_entry_dialog",
     "ue_forge.plugin_builder.engines_settings_tab",
+    # uproject_launcher
+    "ue_forge.uproject_launcher",
+    "ue_forge.uproject_launcher.strings",
+    "ue_forge.uproject_launcher.core",
+    "ue_forge.uproject_launcher.page",
     # renamer
     "ue_forge.renamer",
     "ue_forge.renamer.strings",

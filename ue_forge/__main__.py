@@ -30,11 +30,13 @@ logger = logging.getLogger(__name__)
 def main() -> int:
     from ue_forge.commandlet_runner import CommandletRunnerPage
     from ue_forge.include_optimizer import IncludeOptimizerPage
+    from ue_forge.uproject_launcher import UProjectLauncherPage
     from ue_forge.plugin_builder import PluginBuilderPage
     from ue_forge.renamer import RenamerPage
 
     page_factories = [
         PluginBuilderPage,
+        UProjectLauncherPage,
         RenamerPage,
         IncludeOptimizerPage,
         CommandletRunnerPage,
