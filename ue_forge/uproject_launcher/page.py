@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
-from PySide6.QtCore import QTimer, Qt, Signal
+from PySide6.QtCore import QMimeData, QTimer, Qt, Signal
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -36,6 +36,7 @@ from framekit.localization import tr
 from framekit.styles import COLORS, FONTS, RADIUS
 from framekit.types import StatusKind
 from framekit.widgets import PathInput
+from pyside_frameless import DropZoneWidget
 from ue_forge.config import get_ue_config_manager as get_config_manager
 from ue_forge.platform import ue_platform_handler
 from ue_forge.plugin_builder.engine_finder import EngineFinder
@@ -189,7 +190,7 @@ class PluginScanDialog(QDialog):
         return self._selected_names.copy()
 
 
-class UProjectLauncherPage(QWidget):
+class UProjectLauncherPage(DropZoneWidget):
     PAGE_ID = "uproject_launcher"
     PAGE_ICON = "GAMEPAD_2"
 
@@ -201,7 +202,7 @@ class UProjectLauncherPage(QWidget):
         initial_profile_path: Optional[Path] = None,
         launch_immediately: bool = False,
     ):
-        super().__init__(parent)
+        super().__init__(parent, valid_extensions=[".ulaunch"])
         self.setObjectName("uprojectLauncherPage")
         self.setStyleSheet(f"QWidget#uprojectLauncherPage {{ background-color: {COLORS['bg_primary']}; }}")
         self._config = get_config_manager()
@@ -214,6 +215,16 @@ class UProjectLauncherPage(QWidget):
         self._loading = False
         self._dirty = False
         self._setup_ui()
+        for widget in self.findChildren(QWidget):
+            widget.setAcceptDrops(False)
+        overlay = self.setup_drop_overlay()
+        overlay.configure(
+            valid_pixmap=Icons.get_pixmap("UPLOAD", 48, COLORS["accent_primary"]),
+            invalid_pixmap=Icons.get_pixmap("X_CIRCLE", 48, COLORS["warning"]),
+            invalid_text=tr("drop_launch_profile_invalid"),
+        )
+        self._profile_input.setToolTip(tr("drop_launch_profile"))
+        self.set_drop_callback(self._profile_input.set_path)
         self._load_config()
         if initial_profile_path:
             self._set_profile_input(initial_profile_path)
@@ -224,6 +235,18 @@ class UProjectLauncherPage(QWidget):
     @staticmethod
     def page_title() -> str:
         return tr("uproject_launcher")
+
+    def _find_target_file(self, mime: QMimeData) -> str | None:
+        urls = mime.urls()
+        if len(urls) != 1 or not urls[0].isLocalFile():
+            return None
+        path = Path(urls[0].toLocalFile())
+        if path.is_file() and path.suffix.lower() == ".ulaunch":
+            return str(path)
+        return None
+
+    def _is_valid_drop(self, mime: QMimeData) -> bool:
+        return self._find_target_file(mime) is not None
 
     def _setup_ui(self) -> None:
         layout = QVBoxLayout(self)

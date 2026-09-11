@@ -2,17 +2,18 @@ import json
 import os
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PySide6.QtWidgets import QApplication, QLabel
-from PySide6.QtCore import QPoint, QRect, Qt
-from PySide6.QtGui import QFont, QFontDatabase
+from PySide6.QtCore import QMimeData, QPoint, QPointF, QRect, Qt, QUrl
+from PySide6.QtGui import QDragEnterEvent, QDropEvent, QFont, QFontDatabase
 from PySide6.QtTest import QTest
 
 from framekit.config import set_config_manager
-from framekit.localization import get_current_language, set_language
+from framekit.localization import get_current_language, set_language, tr
 from framekit.platform import set_platform_handler
 from framekit.shell import HostWindow, SinglePageShell
 from framekit.styles import get_main_stylesheet, get_current_theme, set_theme
@@ -58,6 +59,85 @@ class UProjectLauncherPageTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         self._temporary_directory.cleanup()
+
+    def _drop_urls(self, target, urls) -> bool:
+        mime = QMimeData()
+        mime.setUrls(urls)
+        enter = QDragEnterEvent(QPoint(10, 10), Qt.DropAction.CopyAction, mime,
+                                Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
+        self.app.sendEvent(target, enter)
+        drop = QDropEvent(QPointF(10, 10), Qt.DropAction.CopyAction, mime,
+                          Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
+        self.app.sendEvent(target, drop)
+        self.app.processEvents()
+        return drop.isAccepted()
+
+    def test_drop_opens_profile_from_both_panels_in_both_shells(self) -> None:
+        profile_path = self.root / "Local Profile.ULAUNCH"
+        save_profile(profile_path, ForgeProfile(plugins=[LocalPlugin("LocalTools")]))
+        with patch("ue_forge.uproject_launcher.page.launch_editor") as launch:
+            for shell_type in (SinglePageShell, HostWindow):
+                with self.subTest(shell=shell_type.__name__):
+                    page = UProjectLauncherPage()
+                    if shell_type is SinglePageShell:
+                        window = shell_type(page=page, title="Launcher")
+                    else:
+                        window = shell_type(title="Forge")
+                        window.add_page(page)
+                    self.addCleanup(window.deleteLater)
+                    self.addCleanup(window.close)
+                    window.show()
+                    self.app.processEvents()
+                    for target in (page._profile_input._input, page._table.viewport(), page._arguments):
+                        self.assertTrue(self._drop_urls(target, [QUrl.fromLocalFile(str(profile_path))]))
+                        self.assertEqual(page._profile_path, profile_path.resolve())
+                        self.assertEqual(Path(page._profile_input.path()), profile_path)
+                        self.assertEqual(page._table.item(0, 1).text(), "LocalTools")
+                        self.assertEqual(page._arguments.text(), "")
+                    window.close()
+            launch.assert_not_called()
+
+    def test_drop_preserves_unsaved_profile_when_cancelled(self) -> None:
+        first, second = self.root / "First.ulaunch", self.root / "Second.ulaunch"
+        save_profile(first, ForgeProfile())
+        save_profile(second, ForgeProfile(arguments="-NoSplash"))
+        page = UProjectLauncherPage(initial_profile_path=first)
+        self.addCleanup(page.deleteLater)
+        page.show()
+        page._arguments.setText("-log")
+        with patch("ue_forge.uproject_launcher.page.MessageDialog.question", return_value=tr("no")) as confirm:
+            self._drop_urls(page, [QUrl.fromLocalFile(str(second))])
+            confirm.assert_called_once()
+        self.assertEqual(page._profile_path, first.resolve())
+        self.assertEqual(Path(page._profile_input.path()), first.resolve())
+        self.assertEqual(page._arguments.text(), "-log")
+        self.assertTrue(page._dirty)
+        with patch("ue_forge.uproject_launcher.page.MessageDialog.question", return_value=tr("yes")):
+            self._drop_urls(page, [QUrl.fromLocalFile(str(second))])
+        self.assertEqual(page._profile_path, second.resolve())
+        self.assertEqual(page._arguments.text(), "-NoSplash")
+        self.assertFalse(page._dirty)
+        page.close()
+
+    def test_drop_rejects_non_profile_and_multiple_files(self) -> None:
+        profile_path = self.root / "Game.ulaunch"
+        save_profile(profile_path, ForgeProfile())
+        page = UProjectLauncherPage(initial_profile_path=profile_path)
+        self.addCleanup(page.deleteLater)
+        page.show()
+        invalid_path = self.root / "Game.txt"
+        invalid_path.touch()
+        for urls in (
+            [QUrl.fromLocalFile(str(invalid_path))],
+            [QUrl.fromLocalFile(str(self.root))],
+            [QUrl.fromLocalFile(str(self.root / "Missing.ulaunch"))],
+            [QUrl("https://example.com/Game.ulaunch")],
+            [QUrl.fromLocalFile(str(profile_path))] * 2,
+        ):
+            with self.subTest(urls=urls):
+                self.assertFalse(self._drop_urls(page, urls))
+                self.assertEqual(page._profile_path, profile_path.resolve())
+        page.close()
 
     def test_profile_populates_table_and_launch_command(self) -> None:
         project_path = self.root / "Game.uproject"
