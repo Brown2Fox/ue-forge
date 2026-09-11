@@ -103,6 +103,21 @@ class PluginBuilder:
         except (json.JSONDecodeError, IOError, KeyError):
             return None
 
+    @staticmethod
+    def update_plugin_field(plugin_path: Path, key: str, value: Any) -> None:
+        """Update a top-level field in a .uplugin descriptor."""
+        with open(plugin_path, "r", encoding="utf-8-sig") as f:
+            data = json.load(f)
+        data[key] = value
+        temporary_path = plugin_path.with_name(f".{plugin_path.name}.{uuid.uuid4().hex}.tmp")
+        try:
+            with open(temporary_path, "w", encoding="utf-8", newline="\n") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+                f.write("\n")
+            os.replace(temporary_path, plugin_path)
+        finally:
+            temporary_path.unlink(missing_ok=True)
+
     def get_uat_path(self, engine_path: Path) -> Optional[Path]:
         """Get path to RunUAT script for given engine."""
         uat_name = self._platform.get_uat_script_name()

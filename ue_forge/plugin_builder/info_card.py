@@ -9,16 +9,22 @@ from PySide6.QtWidgets import (
     QLabel,
     QFrame,
     QScrollArea,
+    QLineEdit,
+    QPushButton,
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QIntValidator
 
 from framekit.styles import COLORS, FONTS, RADIUS
+from framekit.icons import Icons
 from .types import PluginInfo
 from framekit.localization import tr
 
 
 class InfoRow(QWidget):
     """Single row of information with label and value."""
+
+    value_changed = Signal(str, object)
 
     def __init__(
             self,
@@ -27,6 +33,8 @@ class InfoRow(QWidget):
             value_color: str = None,
             is_tag: bool = False,
             is_link: bool = False,
+            editable_key: Optional[str] = None,
+            value_type: type = str,
             parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
@@ -45,7 +53,27 @@ class InfoRow(QWidget):
         label_widget.setMinimumWidth(100)
         layout.addWidget(label_widget)
 
-        if is_tag and value:
+        if editable_key:
+            value_widget = QLineEdit(str(value) if value is not None else "")
+            value_widget.setProperty("original_value", value)
+            if value_type is int:
+                value_widget.setValidator(QIntValidator(0, 2147483647, value_widget))
+            value_widget.setStyleSheet(f"""
+                QLineEdit {{
+                    color: {value_color or COLORS['text_secondary']};
+                    font-size: {FONTS['size_sm']};
+                    font-family: {FONTS['family_mono']};
+                    background-color: {COLORS['bg_input']};
+                    border: none;
+                    border-radius: 4px;
+                    padding: 3px 6px;
+                }}
+            """)
+            value_widget.editingFinished.connect(
+                lambda: self._emit_value(editable_key, value_widget, value_type)
+            )
+            layout.addWidget(value_widget, 1)
+        elif is_tag and value:
             # Show as tag/badge
             tag_container = QWidget()
             tag_container.setStyleSheet("background: transparent;")
@@ -101,9 +129,25 @@ class InfoRow(QWidget):
             value_widget.setWordWrap(True)
             layout.addWidget(value_widget, 1)
 
+    def _emit_value(self, key: str, editor: QLineEdit, value_type: type) -> None:
+        text = editor.text()
+        if value_type is int:
+            if not text:
+                editor.setText(str(editor.property("original_value")))
+                return
+            value = int(text)
+        else:
+            value = text
+        if value == editor.property("original_value"):
+            return
+        editor.setProperty("original_value", value)
+        self.value_changed.emit(key, value)
+
 
 class InfoSection(QWidget):
     """Section with title and rows."""
+
+    value_changed = Signal(str, object)
 
     def __init__(
             self,
@@ -137,7 +181,10 @@ class InfoSection(QWidget):
             color = row_data[2] if len(row_data) > 2 else None
             is_tag = row_data[3] if len(row_data) > 3 else False
             is_link = row_data[4] if len(row_data) > 4 else False
-            row = InfoRow(label, value, color, is_tag, is_link)
+            editable_key = row_data[5] if len(row_data) > 5 else None
+            value_type = row_data[6] if len(row_data) > 6 else str
+            row = InfoRow(label, value, color, is_tag, is_link, editable_key, value_type)
+            row.value_changed.connect(self.value_changed)
             layout.addWidget(row)
 
 
@@ -156,6 +203,9 @@ class InfoCard(QWidget):
     # Heights for different states
     COMPACT_HEIGHT = 80  # When no plugin loaded (header + placeholder text)
     EXPANDED_HEIGHT = 280  # When plugin loaded
+
+    refresh_requested = Signal()
+    value_changed = Signal(str, object)
     
     def __init__(
         self,
@@ -213,6 +263,26 @@ class InfoCard(QWidget):
         """)
         header_layout.addWidget(self._title_label)
         header_layout.addStretch()
+
+        self._refresh_btn = QPushButton()
+        self._refresh_btn.setIcon(Icons.get_icon("REFRESH_CW", 14, COLORS['text_muted']))
+        self._refresh_btn.setFixedSize(28, 28)
+        self._refresh_btn.setToolTip(tr("refresh_plugin_info"))
+        self._refresh_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._refresh_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self._refresh_btn.setEnabled(False)
+        self._refresh_btn.setStyleSheet(f"""
+            QPushButton {{
+                background: transparent;
+                border: none;
+                border-radius: 4px;
+            }}
+            QPushButton:hover {{
+                background-color: {COLORS['bg_tertiary']};
+            }}
+        """)
+        self._refresh_btn.clicked.connect(self.refresh_requested)
+        header_layout.addWidget(self._refresh_btn)
         
         card_layout.addWidget(self._header)
         
@@ -267,6 +337,7 @@ class InfoCard(QWidget):
 
         # Expand card when plugin info is set
         self._set_expanded(True)
+        self._refresh_btn.setEnabled(True)
 
         # Container for all sections
         self._content_widget = QWidget()
@@ -277,20 +348,21 @@ class InfoCard(QWidget):
 
         # === Basic Info Section ===
         basic_rows = [
-            (tr("name"), info.friendly_name),
-            (tr("version"), f"{info.version_name} (v{info.version})"),
-            (tr("engine_version"), info.engine_version or "—"),
-            (tr("category"), info.category or "—"),
-            (tr("author"), info.created_by or "—"),
+            (tr("name"), info.friendly_name, None, False, False, "FriendlyName"),
+            (tr("version"), info.version_name, None, False, False, "VersionName"),
+            (tr("version_number"), info.version, None, False, False, "Version", int),
+            (tr("engine_version"), info.engine_version, None, False, False, "EngineVersion"),
+            (tr("category"), info.category, None, False, False, "Category"),
+            (tr("author"), info.created_by, None, False, False, "CreatedBy"),
         ]
-        if info.description:
-            basic_rows.append((tr("description"), info.description))
+        basic_rows.append((tr("description"), info.description, None, False, False, "Description"))
         if info.parent_plugin_name:
-            basic_rows.append((tr("parent_plugin"), info.parent_plugin_name))
+            basic_rows.append((tr("parent_plugin"), info.parent_plugin_name, None, False, False, "ParentPluginName"))
         if info.editor_custom_virtual_path:
-            basic_rows.append((tr("virtual_path"), info.editor_custom_virtual_path))
+            basic_rows.append((tr("virtual_path"), info.editor_custom_virtual_path, None, False, False, "EditorCustomVirtualPath"))
 
         basic_section = InfoSection(tr("section_basic"), basic_rows)
+        basic_section.value_changed.connect(self.value_changed)
         sections_layout.addWidget(basic_section)
 
         # === Modules Section ===
@@ -368,16 +440,17 @@ class InfoCard(QWidget):
         # === URLs Section ===
         urls = []
         if info.docs_url:
-            urls.append((tr("docs_url"), info.docs_url, None, False, True))
+            urls.append((tr("docs_url"), info.docs_url, None, False, False, "DocsURL"))
         if info.marketplace_url:
-            urls.append((tr("marketplace_url"), info.marketplace_url, None, False, True))
+            urls.append((tr("marketplace_url"), info.marketplace_url, None, False, False, "MarketplaceURL"))
         if info.support_url:
-            urls.append((tr("support_url"), info.support_url, None, False, True))
+            urls.append((tr("support_url"), info.support_url, None, False, False, "SupportURL"))
         if info.created_by_url:
-            urls.append((tr("author_url"), info.created_by_url, None, False, True))
+            urls.append((tr("author_url"), info.created_by_url, None, False, False, "CreatedByURL"))
 
         if urls:
             urls_section = InfoSection(tr("section_links"), urls)
+            urls_section.value_changed.connect(self.value_changed)
             sections_layout.addWidget(urls_section)
 
         sections_layout.addStretch()
@@ -419,6 +492,7 @@ class InfoCard(QWidget):
             self._content_widget = None
         
         self._empty_label.setVisible(True)
+        self._refresh_btn.setEnabled(False)
         # Collapse card when cleared
         self._set_expanded(False)
     

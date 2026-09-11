@@ -198,6 +198,8 @@ class PluginPanel(DropZoneWidget):
 
         # Plugin info card
         self._info_card = InfoCard(title=tr("plugin_information"))
+        self._info_card.refresh_requested.connect(self.refresh_plugin_info)
+        self._info_card.value_changed.connect(self._update_plugin_field)
         content_layout.addWidget(self._info_card)
 
         # ===== TARGET ENGINE SECTION =====
@@ -423,6 +425,19 @@ class PluginPanel(DropZoneWidget):
             self._info_card.set_plugin_info(self._plugin_info)
         else:
             self._info_card.clear_items()
+
+    def refresh_plugin_info(self) -> None:
+        """Reload plugin information from the selected descriptor."""
+        self._update_plugin_info(self.get_plugin_path())
+        self._check_version_match()
+
+    def _update_plugin_field(self, key: str, value: object) -> None:
+        plugin_path = Path(self.get_plugin_path())
+        try:
+            PluginBuilder.update_plugin_field(plugin_path, key, value)
+        except (OSError, ValueError, TypeError) as error:
+            MessageDialog.warning(self, tr("error"), tr("plugin_info_update_failed", error=error))
+        self.refresh_plugin_info()
 
     def set_engines(self, engines: Dict[str, EngineInfo]) -> None:
         """Set available engines."""

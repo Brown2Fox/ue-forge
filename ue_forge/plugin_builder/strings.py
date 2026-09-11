@@ -17,6 +17,7 @@ register_translations({
         # Plugin info fields
         "name": "Name",
         "version": "Version",
+        "version_number": "Version number",
         "engine_version": "Engine Version",
         "modules": "Modules",
         "category": "Category",
@@ -75,6 +76,8 @@ register_translations({
         "uat_help": "UAT Help",
         "clear_console": "Clear Console",
         "build_plugin": "Build Plugin",
+        "refresh_plugin_info": "Refresh plugin information",
+        "plugin_info_update_failed": "Failed to update plugin information: {error}",
 
         # Settings / Engine dialog
         "manage_engine_installations": "Manage Engine Installations",
@@ -168,6 +171,7 @@ register_translations({
         # Plugin info fields
         "name": "Имя",
         "version": "Версия",
+        "version_number": "Номер версии",
         "engine_version": "Версия движка",
         "modules": "Модули",
         "category": "Категория",
@@ -226,6 +230,8 @@ register_translations({
         "uat_help": "Справка UAT",
         "clear_console": "Очистить",
         "build_plugin": "Собрать",
+        "refresh_plugin_info": "Обновить информацию о плагине",
+        "plugin_info_update_failed": "Не удалось обновить информацию о плагине: {error}",
 
         # Settings / Engine dialog
         "manage_engine_installations": "Управление движками",
