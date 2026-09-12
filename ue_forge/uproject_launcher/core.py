@@ -7,7 +7,9 @@ import os
 import re
 import shlex
 import subprocess
+import sys
 import uuid
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -259,11 +261,56 @@ def build_launch_command(
     return command
 
 
+def _editor_environment(bundle_path: Path) -> dict[str, str]:
+    environment = os.environ.copy()
+    bundle_path = bundle_path.resolve()
+    for name in ("PATH", "QT_PLUGIN_PATH", "QML2_IMPORT_PATH"):
+        if name not in environment:
+            continue
+        paths = [
+            entry for entry in environment[name].split(os.pathsep)
+            if not Path(entry.strip('"')).resolve().is_relative_to(bundle_path)
+        ]
+        if paths:
+            environment[name] = os.pathsep.join(paths)
+        else:
+            environment.pop(name)
+    return environment
+
+
+@contextmanager
+def _system_dll_directory():
+    import ctypes
+    from ctypes import wintypes
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    get_directory = kernel32.GetDllDirectoryW
+    get_directory.argtypes = [wintypes.DWORD, wintypes.LPWSTR]
+    get_directory.restype = wintypes.DWORD
+    set_directory = kernel32.SetDllDirectoryW
+    set_directory.argtypes = [wintypes.LPCWSTR]
+    set_directory.restype = wintypes.BOOL
+    directory = ctypes.create_unicode_buffer(32768)
+    length = get_directory(len(directory), directory)
+    if length >= len(directory):
+        raise OSError("The DLL search directory is too long.")
+    if not set_directory(None):
+        raise ctypes.WinError(ctypes.get_last_error())
+    try:
+        yield
+    finally:
+        if not set_directory(directory.value or None):
+            raise ctypes.WinError(ctypes.get_last_error())
+
+
 def launch_editor(command: list[str], project_path: Path) -> subprocess.Popen:
-    creation_flags = subprocess.DETACHED_PROCESS if os.name == "nt" else 0
-    return subprocess.Popen(
-        command,
+    options = dict(
         cwd=str(project_path.parent),
-        creationflags=creation_flags,
+        creationflags=subprocess.DETACHED_PROCESS if os.name == "nt" else 0,
         close_fds=True,
     )
+    if os.name == "nt" and getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        environment = _editor_environment(Path(sys._MEIPASS))
+        with _system_dll_directory():
+            return subprocess.Popen(command, env=environment, **options)
+    return subprocess.Popen(command, **options)

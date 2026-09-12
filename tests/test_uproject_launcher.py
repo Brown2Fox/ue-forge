@@ -1,7 +1,11 @@
 import json
+import os
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from ue_forge.uproject_launcher.core import (
     ForgeProfile,
@@ -10,6 +14,7 @@ from ue_forge.uproject_launcher.core import (
     build_launch_command,
     filter_plugins,
     load_profile,
+    launch_editor,
     resolve_engine,
     resolve_engine_override,
     resolve_project_path,
@@ -108,6 +113,60 @@ class UProjectLauncherCoreTests(unittest.TestCase):
 
         self.assertEqual(command[:3], [str(editor_path), str(project_path), "-EnablePlugins=One,Three"])
         self.assertEqual(command[3:], ["-log", "-ExecCmds=stat fps"])
+
+    @unittest.skipUnless(os.name == "nt", "Windows DLL search directory")
+    def test_frozen_launch_does_not_inherit_bundle_libraries(self) -> None:
+        import ctypes
+        from ue_forge.uproject_launcher.core import _system_dll_directory
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.SetDllDirectoryW.argtypes = [ctypes.c_wchar_p]
+        bundle = self.root / "_MEI123"
+        bundle.mkdir()
+        bundle_plugins = bundle / "PySide6" / "plugins"
+        external_path = self.root / "_MEI123-external"
+        environment = {
+            "PATH": os.pathsep.join([str(bundle), str(external_path), str(bundle_plugins)]),
+            "QT_PLUGIN_PATH": str(bundle_plugins),
+            "QML2_IMPORT_PATH": os.pathsep.join([str(bundle), str(external_path)]),
+            "UNCHANGED": "project setting",
+        }
+        project = self.root / "Game.uproject"
+
+        def dll_directory():
+            value = ctypes.create_unicode_buffer(32768)
+            kernel32.GetDllDirectoryW(len(value), value)
+            return value.value
+
+        def spawn(*args, **kwargs):
+            self.assertEqual(dll_directory(), "")
+            self.assertEqual(kwargs["env"]["PATH"], str(external_path))
+            self.assertNotIn("QT_PLUGIN_PATH", kwargs["env"])
+            self.assertEqual(kwargs["env"]["QML2_IMPORT_PATH"], str(external_path))
+            self.assertEqual(kwargs["env"]["UNCHANGED"], "project setting")
+            self.assertEqual(kwargs["cwd"], str(project.parent))
+            self.assertEqual(kwargs["creationflags"], subprocess.DETACHED_PROCESS)
+            self.assertTrue(kwargs["close_fds"])
+            return process
+
+        process = object()
+        original_directory = dll_directory()
+        with _system_dll_directory():
+            self.assertTrue(kernel32.SetDllDirectoryW(str(bundle)))
+            with patch.object(sys, "frozen", True, create=True), \
+                    patch.object(sys, "_MEIPASS", str(bundle), create=True), \
+                    patch.dict(os.environ, environment, clear=True), \
+                    patch("ue_forge.uproject_launcher.core.subprocess.Popen", side_effect=spawn):
+                self.assertIs(launch_editor(["UnrealEditor.exe", str(project)], project), process)
+                self.assertEqual(dll_directory(), str(bundle))
+                self.assertEqual(dict(os.environ), environment)
+            with patch.object(sys, "frozen", True, create=True), \
+                    patch.object(sys, "_MEIPASS", str(bundle), create=True), \
+                    patch("ue_forge.uproject_launcher.core.subprocess.Popen", side_effect=OSError("Cannot start")):
+                with self.assertRaisesRegex(OSError, "Cannot start"):
+                    launch_editor(["Missing.exe"], project)
+                self.assertEqual(dll_directory(), str(bundle))
+        self.assertEqual(dll_directory(), original_directory)
 
 
 if __name__ == "__main__":
