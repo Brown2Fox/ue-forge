@@ -776,7 +776,8 @@ class UProjectLauncherPage(DropZoneWidget):
             application.quit()
 
     def get_settings_tabs(self) -> list:
-        return []
+        from .associations_settings_tab import AssociationsSettingsTab
+        return [AssociationsSettingsTab()]
 
     def show_settings(self) -> None:
         from framekit.dialogs import SettingsDialog

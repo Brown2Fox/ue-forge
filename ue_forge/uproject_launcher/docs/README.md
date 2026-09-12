@@ -31,4 +31,8 @@ Auto Detect requires the project `EngineAssociation` to match a registered engin
 
 The profile is local data. The launcher does not modify `.gitignore` or `.git/info/exclude`.
 
-The standalone launcher accepts a profile path. Associate `.ulaunch` with the standalone executable in Windows to launch a project by double-clicking its profile. Passing `--open` opens the same profile for editing without launching.
+In launcher settings, open **System** and click **Register .ulaunch**. Double-clicking a profile launches its project. The classic context menu contains **Launch Project** and **Edit profile**; in Windows 11, open **Show more options** to access them. Registration applies immediately to the current Windows account and supports both UE Forge and the standalone launcher. Register again if the executable moves.
+
+If Windows already has another default application for `.ulaunch`, use **Windows default apps** to select **UE Forge UProject Launcher** for that extension. Registration preserves the existing Windows user choice.
+
+The standalone launcher accepts a profile path or `--launch-profile <profile>`. UE Forge also accepts `--launch-profile <profile>`. Adding `--open` opens the profile for editing without launching.

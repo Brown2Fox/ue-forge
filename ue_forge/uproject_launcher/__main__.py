@@ -11,14 +11,17 @@ from ue_forge.config import UEForgeConfigManager
 from ue_forge.platform import ue_handler_for
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     from ue_forge.uproject_launcher.page import UProjectLauncherPage
 
     parser = argparse.ArgumentParser(prog="UE UProject Launcher")
-    parser.add_argument("profile", nargs="?", help="Path to a .ulaunch profile")
+    profiles = parser.add_mutually_exclusive_group()
+    profiles.add_argument("profile", nargs="?", help="Path to a .ulaunch profile")
+    profiles.add_argument("--launch-profile", metavar="PROFILE", help="Path to a .ulaunch profile")
     parser.add_argument("--open", action="store_true", dest="open_only", help="Open the profile without launching")
-    arguments = parser.parse_args()
-    profile_path = Path(arguments.profile).resolve() if arguments.profile else None
+    arguments = parser.parse_args(argv)
+    selected_profile = arguments.profile or arguments.launch_profile
+    profile_path = Path(selected_profile).resolve() if selected_profile else None
 
     return run_standalone(
         page_factory=lambda: UProjectLauncherPage(

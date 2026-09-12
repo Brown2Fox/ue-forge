@@ -28,6 +28,10 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> int:
+    if "--launch-profile" in sys.argv[1:]:
+        from ue_forge.uproject_launcher.__main__ import main as launcher_main
+        return launcher_main(sys.argv[1:])
+
     from ue_forge.commandlet_runner import CommandletRunnerPage
     from ue_forge.include_optimizer import IncludeOptimizerPage
     from ue_forge.uproject_launcher import UProjectLauncherPage

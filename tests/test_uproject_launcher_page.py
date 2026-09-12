@@ -60,6 +60,26 @@ class UProjectLauncherPageTests(unittest.TestCase):
     def tearDown(self) -> None:
         self._temporary_directory.cleanup()
 
+    @unittest.skipUnless(os.name == "nt", "Windows association settings")
+    def test_association_settings_register_only_when_button_is_clicked(self) -> None:
+        from ue_forge.uproject_launcher.file_associations import AssociationStatus
+        from ue_forge.uproject_launcher.associations_settings_tab import AssociationsSettingsTab
+
+        executable = self.root / "UE Forge.exe"
+        executable.touch()
+        module = "ue_forge.uproject_launcher.associations_settings_tab"
+        with patch(f"{module}.suggested_executable", return_value=executable), \
+                patch(f"{module}.association_status", return_value=AssociationStatus()) as status, \
+                patch(f"{module}.register_associations") as register:
+            tab = AssociationsSettingsTab()
+            self.addCleanup(tab.deleteLater)
+            tab.on_apply()
+            register.assert_not_called()
+            status.return_value = AssociationStatus(True, True, executable)
+            tab._register_button.click()
+            register.assert_called_once_with(executable, tr("launch_project"), tr("edit_launch_profile"))
+            self.assertEqual(tab._status.text(), tr("associations_registered"))
+
     def _drop_urls(self, target, urls) -> bool:
         mime = QMimeData()
         mime.setUrls(urls)
