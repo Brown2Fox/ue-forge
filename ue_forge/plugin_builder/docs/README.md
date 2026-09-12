@@ -4,7 +4,9 @@
 
 Build Unreal Engine plugins from source using UAT (Unreal Automation Tool).
 
-![plugin_builder_en.png](..%2Fscreenshots%2Fplugin_builder_en.png)
+| Dark theme | Light theme |
+|:---:|:---:|
+| <a href="../screenshots/plugin_builder_en.png"><img src="../screenshots/plugin_builder_en.png" alt="Plugin Builder — dark theme" width="420"></a> | <a href="../screenshots/plugin_builder_en_light.png"><img src="../screenshots/plugin_builder_en_light.png" alt="Plugin Builder — light theme" width="420"></a> |
 
 ## Features
 

@@ -4,7 +4,9 @@
 
 Discover and execute Unreal Engine commandlets with auto-generated usage info.
 
-![comandlet_runner_en.png](..%2Fscreenshots%2Fcomandlet_runner_en.png)
+| Dark theme | Light theme |
+|:---:|:---:|
+| <a href="../screenshots/comandlet_runner_en.png"><img src="../screenshots/comandlet_runner_en.png" alt="Commandlet Runner — dark theme" width="420"></a> | <a href="../screenshots/comandlet_runner_en_light.png"><img src="../screenshots/comandlet_runner_en_light.png" alt="Commandlet Runner — light theme" width="420"></a> |
 
 ## Features
 

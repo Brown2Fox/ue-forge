@@ -4,7 +4,9 @@
 
 Переименование плагинов и проектов Unreal Engine с полной осведомлённостью о структуре исходников.
 
-![renamer_ru.png](..%2Fscreenshots%2Frenamer_ru.png)
+| Тёмная тема | Светлая тема |
+|:---:|:---:|
+| <a href="../screenshots/renamer_ru.png"><img src="../screenshots/renamer_ru.png" alt="Renamer — тёмная тема" width="420"></a> | <a href="../screenshots/renamer_ru_light.png"><img src="../screenshots/renamer_ru_light.png" alt="Renamer — светлая тема" width="420"></a> |
 
 ## Возможности
 

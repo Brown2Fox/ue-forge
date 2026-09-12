@@ -2,6 +2,10 @@
 
 UProject Launcher открывает Unreal Engine-проект с выбранными плагинами движка, включёнными только для запущенного процесса редактора. Дескриптор проекта не изменяется.
 
+| Тёмная тема | Светлая тема |
+|:---:|:---:|
+| <a href="../screenshots/uproject_launcher_ru.png"><img src="../screenshots/uproject_launcher_ru.png" alt="UProject Launcher — тёмная тема" width="420"></a> | <a href="../screenshots/uproject_launcher_ru_light.png"><img src="../screenshots/uproject_launcher_ru_light.png" alt="UProject Launcher — светлая тема" width="420"></a> |
+
 Параметры запуска расположены слева, список плагинов — справа. В небольшом окне параметры прокручиваются, а кнопки сохранения и запуска остаются видимыми под списком плагинов. Раскладка одинакова в отдельном launcher и в UE Forge.
 
 Перетащите один файл `.ulaunch` на любую панель launcher, чтобы открыть профиль для редактирования. Если есть несохранённые изменения, перед открытием другого профиля появится подтверждение. Перетаскивание профиля не запускает Unreal Editor.

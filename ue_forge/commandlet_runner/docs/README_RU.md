@@ -4,7 +4,9 @@
 
 Обнаружение и запуск командлетов Unreal Engine с автогенерацией информации об использовании.
 
-![comandlet_runner_ru.png](..%2Fscreenshots%2Fcomandlet_runner_ru.png)
+| Тёмная тема | Светлая тема |
+|:---:|:---:|
+| <a href="../screenshots/comandlet_runner_ru.png"><img src="../screenshots/comandlet_runner_ru.png" alt="Commandlet Runner — тёмная тема" width="420"></a> | <a href="../screenshots/comandlet_runner_ru_light.png"><img src="../screenshots/comandlet_runner_ru_light.png" alt="Commandlet Runner — светлая тема" width="420"></a> |
 
 ## Возможности
 

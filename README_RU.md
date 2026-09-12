@@ -17,23 +17,46 @@
 
 UE Forge — хост-окно с сайдбаром, в которое загружаются страницы инструментов. Каждый инструмент можно также запустить отдельно.
 
+Все инструменты поддерживают тёмную и светлую темы. Нажмите на скриншот, чтобы открыть его в полном размере.
+
 ### [Plugin Builder](ue_forge/plugin_builder/docs/README_RU.md)
-![plugin_builder_ru.png](ue_forge%2Fplugin_builder%2Fscreenshots%2Fplugin_builder_ru.png)
+
+| Тёмная тема | Светлая тема |
+|:---:|:---:|
+| <a href="ue_forge/plugin_builder/screenshots/plugin_builder_ru.png"><img src="ue_forge/plugin_builder/screenshots/plugin_builder_ru.png" alt="Plugin Builder — тёмная тема" width="420"></a> | <a href="ue_forge/plugin_builder/screenshots/plugin_builder_ru_light.png"><img src="ue_forge/plugin_builder/screenshots/plugin_builder_ru_light.png" alt="Plugin Builder — светлая тема" width="420"></a> |
+
 Сборка UE-плагинов из исходников через UAT. Автоматическое обнаружение установленных движков, валидация `.uplugin`, живая консоль сборки. Расширенные флаги, выбор платформ, настройки на каждый движок.
 
 ### [UProject Launcher](ue_forge/uproject_launcher/docs/README_RU.md)
+
+| Тёмная тема | Светлая тема |
+|:---:|:---:|
+| <a href="ue_forge/uproject_launcher/screenshots/uproject_launcher_ru.png"><img src="ue_forge/uproject_launcher/screenshots/uproject_launcher_ru.png" alt="UProject Launcher — тёмная тема" width="420"></a> | <a href="ue_forge/uproject_launcher/screenshots/uproject_launcher_ru_light.png"><img src="ue_forge/uproject_launcher/screenshots/uproject_launcher_ru_light.png" alt="UProject Launcher — светлая тема" width="420"></a> |
+
 Запуск Unreal-проекта с персональными плагинами движка, включёнными только для текущего процесса. Профиль `.ulaunch` хранит пути к проекту и движку, выбор плагинов и дополнительные аргументы, не изменяя общий `.uproject`.
 
 ### [Renamer](ue_forge/renamer/docs/README_RU.md)
-![renamer_ru.png](ue_forge%2Frenamer%2Fscreenshots%2Frenamer_ru.png)
+
+| Тёмная тема | Светлая тема |
+|:---:|:---:|
+| <a href="ue_forge/renamer/screenshots/renamer_ru.png"><img src="ue_forge/renamer/screenshots/renamer_ru.png" alt="Renamer — тёмная тема" width="420"></a> | <a href="ue_forge/renamer/screenshots/renamer_ru_light.png"><img src="ue_forge/renamer/screenshots/renamer_ru_light.png" alt="Renamer — светлая тема" width="420"></a> |
+
 Полное переименование UE-плагинов и проектов. Обрабатывает `.uplugin` / `.uproject` JSON, имена классов и конструкторы в `.Build.cs`, API-макросы, include guard'ы, `IMPLEMENT_MODULE`, конфиги, комментарии. Diff-превью перед применением, бэкап при выполнении.
 
 ### [Include Optimizer](ue_forge/include_optimizer/docs/README_RU.md)
-![include_optimizer_ru.png](ue_forge%2Finclude_optimizer%2Fscreenshots%2Finclude_optimizer_ru.png)
+
+| Тёмная тема | Светлая тема |
+|:---:|:---:|
+| <a href="ue_forge/include_optimizer/screenshots/include_optimizer_ru.png"><img src="ue_forge/include_optimizer/screenshots/include_optimizer_ru.png" alt="Include Optimizer — тёмная тема" width="420"></a> | <a href="ue_forge/include_optimizer/screenshots/include_optimizer_ru_light.png"><img src="ue_forge/include_optimizer/screenshots/include_optimizer_ru_light.png" alt="Include Optimizer — светлая тема" width="420"></a> |
+
 Оптимизация `#include` в C++ исходниках UE-проекта. Добавляет отсутствующие `UE_INLINE_GENERATED_CPP_BY_NAME`, заменяет `CoreMinimal.h` на конкретные используемые заголовки, удаляет дубликаты, исправляет инклюды внутри препроцессорных блоков. Рекурсивное сканирование плагинов с исключением по чекбоксам.
 
 ### [Commandlet Runner](ue_forge/commandlet_runner/docs/README_RU.md)
-![comandlet_runner_ru.png](ue_forge%2Fcommandlet_runner%2Fscreenshots%2Fcomandlet_runner_ru.png)
+
+| Тёмная тема | Светлая тема |
+|:---:|:---:|
+| <a href="ue_forge/commandlet_runner/screenshots/comandlet_runner_ru.png"><img src="ue_forge/commandlet_runner/screenshots/comandlet_runner_ru.png" alt="Commandlet Runner — тёмная тема" width="420"></a> | <a href="ue_forge/commandlet_runner/screenshots/comandlet_runner_ru_light.png"><img src="ue_forge/commandlet_runner/screenshots/comandlet_runner_ru_light.png" alt="Commandlet Runner — светлая тема" width="420"></a> |
+
 Обнаружение и запуск UE-командлетов. Сканирует исходники движка и проекта на `UCommandlet` подклассы, извлекает описания из комментариев и `HelpDescription`, генерирует usage из паттернов `FParse::Param`. Избранное, заметки, живой вывод консоли.
 
 ---

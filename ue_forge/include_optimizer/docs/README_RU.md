@@ -4,7 +4,9 @@
 
 Оптимизация директив `#include` в C++ исходниках проекта Unreal Engine.
 
-![include_optimizer_ru.png](..%2Fscreenshots%2Finclude_optimizer_ru.png)
+| Тёмная тема | Светлая тема |
+|:---:|:---:|
+| <a href="../screenshots/include_optimizer_ru.png"><img src="../screenshots/include_optimizer_ru.png" alt="Include Optimizer — тёмная тема" width="420"></a> | <a href="../screenshots/include_optimizer_ru_light.png"><img src="../screenshots/include_optimizer_ru_light.png" alt="Include Optimizer — светлая тема" width="420"></a> |
 
 ## Возможности
 

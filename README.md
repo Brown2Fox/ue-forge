@@ -17,23 +17,46 @@ Desktop toolkit for Unreal Engine automation. Frameless UI with dark and light t
 
 UE Forge is a host window with a sidebar that loads tool pages. Each tool can also run standalone.
 
+All tools support dark and light themes. Click a screenshot to view it at full size.
+
 ### [Plugin Builder](ue_forge/plugin_builder/docs/README.md)
-![plugin_builder_en.png](ue_forge%2Fplugin_builder%2Fscreenshots%2Fplugin_builder_en.png)
+
+| Dark theme | Light theme |
+|:---:|:---:|
+| <a href="ue_forge/plugin_builder/screenshots/plugin_builder_en.png"><img src="ue_forge/plugin_builder/screenshots/plugin_builder_en.png" alt="Plugin Builder — dark theme" width="420"></a> | <a href="ue_forge/plugin_builder/screenshots/plugin_builder_en_light.png"><img src="ue_forge/plugin_builder/screenshots/plugin_builder_en_light.png" alt="Plugin Builder — light theme" width="420"></a> |
+
 Build UE plugins from source via UAT. Auto-discovers engine installations, validates `.uplugin` structure, shows live build console. Supports advanced build flags, platform selection, per-engine settings.
 
 ### [UProject Launcher](ue_forge/uproject_launcher/docs/README.md)
+
+| Dark theme | Light theme |
+|:---:|:---:|
+| <a href="ue_forge/uproject_launcher/screenshots/uproject_launcher_en.png"><img src="ue_forge/uproject_launcher/screenshots/uproject_launcher_en.png" alt="UProject Launcher — dark theme" width="420"></a> | <a href="ue_forge/uproject_launcher/screenshots/uproject_launcher_en_light.png"><img src="ue_forge/uproject_launcher/screenshots/uproject_launcher_en_light.png" alt="UProject Launcher — light theme" width="420"></a> |
+
 Launch an Unreal project with personal engine plugins enabled only for the current process. `.ulaunch` profiles keep the project and engine paths, plugin selection, and additional command-line arguments outside the shared `.uproject` descriptor.
 
 ### [Renamer](ue_forge/renamer/docs/README.md)
-![renamer_en.png](ue_forge%2Frenamer%2Fscreenshots%2Frenamer_en.png)
+
+| Dark theme | Light theme |
+|:---:|:---:|
+| <a href="ue_forge/renamer/screenshots/renamer_en.png"><img src="ue_forge/renamer/screenshots/renamer_en.png" alt="Renamer — dark theme" width="420"></a> | <a href="ue_forge/renamer/screenshots/renamer_en_light.png"><img src="ue_forge/renamer/screenshots/renamer_en_light.png" alt="Renamer — light theme" width="420"></a> |
+
 Rename UE plugins and projects end-to-end. Handles `.uplugin` / `.uproject` JSON, `.Build.cs` class names and constructors, API macros, include guards, `IMPLEMENT_MODULE`, config files, comments. Diff-style preview before execution, backup on apply.
 
 ### [Include Optimizer](ue_forge/include_optimizer/docs/README.md)
-![include_optimizer_en.png](ue_forge%2Finclude_optimizer%2Fscreenshots%2Finclude_optimizer_en.png)
+
+| Dark theme | Light theme |
+|:---:|:---:|
+| <a href="ue_forge/include_optimizer/screenshots/include_optimizer_en.png"><img src="ue_forge/include_optimizer/screenshots/include_optimizer_en.png" alt="Include Optimizer — dark theme" width="420"></a> | <a href="ue_forge/include_optimizer/screenshots/include_optimizer_en_light.png"><img src="ue_forge/include_optimizer/screenshots/include_optimizer_en_light.png" alt="Include Optimizer — light theme" width="420"></a> |
+
 Optimize C++ `#include` directives across a UE project. Adds missing `UE_INLINE_GENERATED_CPP_BY_NAME`, replaces `CoreMinimal.h` with only the specific headers actually used, removes duplicates, fixes includes trapped inside preprocessor blocks. Recursive plugin scanning with per-plugin exclusion.
 
 ### [Commandlet Runner](ue_forge/commandlet_runner/docs/README.md)
-![comandlet_runner_en.png](ue_forge%2Fcommandlet_runner%2Fscreenshots%2Fcomandlet_runner_en.png)
+
+| Dark theme | Light theme |
+|:---:|:---:|
+| <a href="ue_forge/commandlet_runner/screenshots/comandlet_runner_en.png"><img src="ue_forge/commandlet_runner/screenshots/comandlet_runner_en.png" alt="Commandlet Runner — dark theme" width="420"></a> | <a href="ue_forge/commandlet_runner/screenshots/comandlet_runner_en_light.png"><img src="ue_forge/commandlet_runner/screenshots/comandlet_runner_en_light.png" alt="Commandlet Runner — light theme" width="420"></a> |
+
 Discover and execute UE commandlets. Scans engine and project source for `UCommandlet` subclasses, extracts descriptions from code comments and `HelpDescription`, auto-generates usage from `FParse::Param` patterns. Favorites, notes, live console output.
 
 ---

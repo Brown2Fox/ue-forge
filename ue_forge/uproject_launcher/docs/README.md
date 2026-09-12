@@ -2,6 +2,10 @@
 
 UProject Launcher opens an Unreal Engine project with selected engine plugins enabled only for that editor process. The project descriptor remains unchanged.
 
+| Dark theme | Light theme |
+|:---:|:---:|
+| <a href="../screenshots/uproject_launcher_en.png"><img src="../screenshots/uproject_launcher_en.png" alt="UProject Launcher — dark theme" width="420"></a> | <a href="../screenshots/uproject_launcher_en_light.png"><img src="../screenshots/uproject_launcher_en_light.png" alt="UProject Launcher — light theme" width="420"></a> |
+
 Launch settings appear on the left and the plugin list on the right. The settings scroll in smaller windows; Save and Launch Project remain visible below the plugin list. Both the standalone launcher and UE Forge use this layout.
 
 Drop a single `.ulaunch` file onto either launcher panel to open it for editing. Unsaved changes require confirmation before another profile opens. Dropping a profile does not launch Unreal Editor.

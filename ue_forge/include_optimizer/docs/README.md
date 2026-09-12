@@ -4,7 +4,9 @@
 
 Optimize C++ `#include` directives across an Unreal Engine project.
 
-![include_optimizer_en.png](..%2Fscreenshots%2Finclude_optimizer_en.png)
+| Dark theme | Light theme |
+|:---:|:---:|
+| <a href="../screenshots/include_optimizer_en.png"><img src="../screenshots/include_optimizer_en.png" alt="Include Optimizer — dark theme" width="420"></a> | <a href="../screenshots/include_optimizer_en_light.png"><img src="../screenshots/include_optimizer_en_light.png" alt="Include Optimizer — light theme" width="420"></a> |
 
 ## Features
 

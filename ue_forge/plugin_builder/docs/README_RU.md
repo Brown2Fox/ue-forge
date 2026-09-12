@@ -4,7 +4,9 @@
 
 Сборка плагинов Unreal Engine из исходников через UAT (Unreal Automation Tool).
 
-![plugin_builder_ru.png](..%2Fscreenshots%2Fplugin_builder_ru.png)
+| Тёмная тема | Светлая тема |
+|:---:|:---:|
+| <a href="../screenshots/plugin_builder_ru.png"><img src="../screenshots/plugin_builder_ru.png" alt="Plugin Builder — тёмная тема" width="420"></a> | <a href="../screenshots/plugin_builder_ru_light.png"><img src="../screenshots/plugin_builder_ru_light.png" alt="Plugin Builder — светлая тема" width="420"></a> |
 
 ## Возможности
 

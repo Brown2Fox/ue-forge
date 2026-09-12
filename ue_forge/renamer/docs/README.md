@@ -4,7 +4,9 @@
 
 Rename Unreal Engine plugins and projects with full source-code awareness.
 
-![renamer_en.png](..%2Fscreenshots%2Frenamer_en.png)
+| Dark theme | Light theme |
+|:---:|:---:|
+| <a href="../screenshots/renamer_en.png"><img src="../screenshots/renamer_en.png" alt="Renamer — dark theme" width="420"></a> | <a href="../screenshots/renamer_en_light.png"><img src="../screenshots/renamer_en_light.png" alt="Renamer — light theme" width="420"></a> |
 
 ## Features
 
