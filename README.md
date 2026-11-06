@@ -13,6 +13,13 @@ Desktop toolkit for Unreal Engine automation. Frameless UI with dark and light t
 
 ---
 
+## Key differences in this fork
+
+- **Dark and light themes** for all tools.
+- **UProject Launcher** launches projects with personal engine plugins without changing `.uproject`. Supports `.ulaunch` profiles, drag and drop, double-click launch, and editing from the classic Windows context menu.
+- **Plugin Builder improvements**: editable plugin information and automatic copying of a successfully built plugin to the selected engine plugins directory.
+- **Remembered file paths**: file dialogs reopen at the last location used by each tool.
+
 ## Tools
 
 UE Forge is a host window with a sidebar that loads tool pages. Each tool can also run standalone.
